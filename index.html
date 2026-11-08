@@ -33,6 +33,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;l
 .lbl::after{content:"";position:absolute;left:-14px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--ink)}
 .lbl.cota{background:var(--dim);border-color:var(--dim);color:var(--dim-ink)}
 .lbl.cota::before,.lbl.cota::after{background:var(--dim)}
+.lbl.flip{transform:translate(calc(-100% - 11px),-50%)}
+.lbl.flip::before{left:auto;right:-12px}
+.lbl.flip::after{left:auto;right:-14px}
 .hud{position:absolute;left:max(22px,env(safe-area-inset-left,0px));top:22px;display:flex;gap:0;pointer-events:none}
 .hud .tag{font:800 10.5px var(--f);letter-spacing:.12em;text-transform:uppercase;background:#ffffff;color:var(--ink);border:1px solid var(--ink);padding:5px 8px}
 .hud .tag+.tag{border-left:0}
@@ -118,6 +121,17 @@ dl.spec dd{margin:0;font:700 12.5px/1.35 var(--f);text-transform:uppercase;lette
   .stephead .num{font-size:60px}
   .card h2{font-size:23px}
   .lbl{font-size:9px;padding:3px 5px}
+}
+/* Celular en horizontal: visor y ficha lado a lado */
+@media (orientation:landscape) and (max-height:500px){
+  html,body{height:100%}
+  .app{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,46%);height:100%}
+  .viewport{position:relative;height:100%;min-height:0;border-bottom:0}
+  aside{overflow:auto;border-left:2px solid var(--ink);padding-block:12px 20px;gap:12px}
+  .legend,.hint{display:none}
+  h1{font-size:22px}
+  .stephead .num{font-size:46px}
+  .card h2{font-size:20px}
 }
 </style>
 
@@ -670,7 +684,10 @@ function stepLength(n){ return items.filter(i=>i.step===n && i.modes.includes(mo
 let camAnim=null, labelSet=[];
 function flyTo(view, ms=1200){
   if(reduce) ms=0;
-  camAnim={p0:camera.position.clone(), t0:controls.target.clone(), p1:new THREE.Vector3(...view[0]), t1:new THREE.Vector3(...view[1]), s:performance.now(), ms};
+  const t1=new THREE.Vector3(...view[1]), p1=new THREE.Vector3(...view[0]);
+  const k=Math.max(1, 1.55/camera.aspect);           // pantallas angostas: alejar la cámara para que entre el modelo
+  p1.sub(t1).multiplyScalar(k).add(t1);
+  camAnim={p0:camera.position.clone(), t0:controls.target.clone(), p1, t1, s:performance.now(), ms};
 }
 function setStep(n, play=true){
   current=n; detailOn=false;
@@ -702,7 +719,18 @@ function placeLabels(){
   labelEls.forEach(([d,p])=>{
     v.copy(p).project(camera);
     if(v.z>1||v.z<-1||Math.abs(v.x)>1.05||Math.abs(v.y)>1.05){ d.style.display='none'; return; }
-    d.style.display=''; d.style.left=((v.x+1)/2*w)+'px'; d.style.top=((1-v.y)/2*h)+'px';
+    const x=(v.x+1)/2*w;
+    d.style.display=''; d.style.left=x+'px'; d.style.top=((1-v.y)/2*h)+'px';
+    d.classList.toggle('flip', x + 14 + d.offsetWidth > w - 12);   // si no entra a la derecha, la etiqueta va a la izquierda
+    d.style.visibility='';
+  });
+  // si dos etiquetas se pisan (pantallas chicas), se oculta la que viene después
+  const placed=[];
+  labelEls.forEach(([d])=>{
+    if(d.style.display==='none') return;
+    const r=d.getBoundingClientRect();
+    if(placed.some(q=>r.left<q.right+2 && r.right>q.left-2 && r.top<q.bottom+2 && r.bottom>q.top-2)){ d.style.visibility='hidden'; return; }
+    placed.push(r);
   });
 }
 
@@ -773,7 +801,7 @@ function applyTheme(){
 applyTheme();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
 new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-function resize(){ const w=vp.clientWidth,h=vp.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov = camera.aspect<1 ? Math.min(70, 40+(1-camera.aspect)*45) : 40; camera.updateProjectionMatrix(); }
+function resize(){ const w=vp.clientWidth,h=vp.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov = camera.aspect<1 ? Math.min(55, 40+(1-camera.aspect)*25) : 40; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(vp); resize();
 
 /* ---------- Loop ---------- */
