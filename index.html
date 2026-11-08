@@ -4,121 +4,120 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Visor 3D del montaje de la piel metálica sobre tabique de Durlock. Sala de capacitación, oficinas Coca-Cola Argentina, Centro Empresarial Núñez.">
-<meta name="theme-color" content="#e3001b">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}*,*::before,*::after{box-sizing:border-box}</style><title>Montaje de la piel metálica</title>
+<meta name="theme-color" content="#ffffff">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}*,*::before,*::after{box-sizing:border-box}</style><title>Ficha técnica piel metálica</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
 <style>
-/* Layout: visor 3D grande + columna de pasos; en celular visor fijo arriba y pasos abajo.
-   Estética de lámina técnica: blanco, negro y rojo Coca-Cola, todo en mayúsculas */
+/* Layout: lámina técnica. Visor 3D enmarcado como plano a la izquierda, ficha de obra a la derecha;
+   en celular visor fijo arriba y ficha abajo. Un solo look claro, como papel. */
 :root{
-  --bg:#f4f4f2; --panel:#ffffff; --fg:#111111; --muted:#6c6c69; --line:#dcdcd8; --strong:#111111;
-  --accent:#e3001b; --accent-ink:#ffffff; --chalk:#1f5fd1; --viewport:#e8e8e4;
-  --label-bg:#ffffff; --label-fg:#111111; --label-line:#111111;
-  --dim:#e3001b; --dim-ink:#ffffff; --on-bg:#111111; --on-fg:#ffffff; --on-n:#ff2a3c;
+  --bg:#f3f3f1; --paper:#ffffff; --ink:#111111; --ink2:#3d3d3b; --muted:#76766f; --rule:#d5d5d0; --tint:#f0f0ec;
+  --red:#e3001b; --red-ink:#ffffff; --chalk:#1f5fd1; --viewport:#dcdddb; --dim:#e3001b; --dim-ink:#ffffff;
   --f:"Akzidenz-Grotesk Pro","Akzidenz-Grotesk","AkzidenzGrotesk","Akzidenz Grotesk","Archivo","Helvetica Neue",Arial,sans-serif;
-  --cond:72%;
+  --cond:74%;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#121212; --panel:#181818; --fg:#f1f1ee; --muted:#9a9a96; --line:#2d2d2b; --strong:#f1f1ee;
-  --accent:#ff2a3c; --accent-ink:#ffffff; --chalk:#6d9cff; --viewport:#1d1d1c;
-  --label-bg:#181818; --label-fg:#f1f1ee; --label-line:#f1f1ee;
-  --dim:#ff2a3c; --dim-ink:#ffffff; --on-bg:#f1f1ee; --on-fg:#121212; --on-n:#e3001b; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#121212; --panel:#181818; --fg:#f1f1ee; --muted:#9a9a96; --line:#2d2d2b; --strong:#f1f1ee;
-  --accent:#ff2a3c; --accent-ink:#ffffff; --chalk:#6d9cff; --viewport:#1d1d1c;
-  --label-bg:#181818; --label-fg:#f1f1ee; --label-line:#f1f1ee;
-  --dim:#ff2a3c; --dim-ink:#ffffff; --on-bg:#f1f1ee; --on-fg:#121212; --on-n:#e3001b; color-scheme:dark}
-
 html,body{height:100%}
-body{background:var(--bg);color:var(--fg);font-family:var(--f);font-size:15px;line-height:1.42}
-.app{display:grid;grid-template-columns:minmax(0,1fr) 420px;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.4}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 460px;height:100%}
+
 .viewport{position:relative;background:var(--viewport);min-width:0;overflow:hidden}
+.viewport::after{content:"";position:absolute;inset:10px;border:1px solid var(--ink);pointer-events:none}
 #c{display:block;width:100%;height:100%;touch-action:none}
 .labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.lbl{position:absolute;transform:translate(11px,-50%);white-space:nowrap;font:700 10.5px/1.1 var(--f);letter-spacing:.08em;text-transform:uppercase;
-  color:var(--label-fg);background:var(--label-bg);border:1px solid var(--label-line);padding:4px 7px}
-.lbl::before{content:"";position:absolute;left:-12px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:var(--dim);box-shadow:0 0 0 2px var(--viewport)}
+.lbl{position:absolute;transform:translate(11px,-50%);white-space:nowrap;font:700 10.5px/1.1 var(--f);letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink);background:#ffffff;border:1px solid var(--ink);padding:4px 6px}
+.lbl::before{content:"";position:absolute;left:-12px;top:50%;width:11px;height:1px;background:var(--ink)}
+.lbl::after{content:"";position:absolute;left:-14px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--ink)}
 .lbl.cota{background:var(--dim);border-color:var(--dim);color:var(--dim-ink)}
-.hud{position:absolute;left:max(14px,env(safe-area-inset-left,0px));top:12px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
-.hud .tag{font:700 10.5px var(--f);letter-spacing:.12em;text-transform:uppercase;background:var(--label-bg);color:var(--label-fg);border:1px solid var(--label-line);padding:5px 8px}
-.hud .tag.m{background:var(--dim);border-color:var(--dim);color:var(--dim-ink)}
-.hint{position:absolute;right:14px;bottom:12px;font:700 10px var(--f);letter-spacing:.12em;text-transform:uppercase;color:#7b7b78;pointer-events:none}
+.lbl.cota::before,.lbl.cota::after{background:var(--dim)}
+.hud{position:absolute;left:max(22px,env(safe-area-inset-left,0px));top:22px;display:flex;gap:0;pointer-events:none}
+.hud .tag{font:800 10.5px var(--f);letter-spacing:.12em;text-transform:uppercase;background:#ffffff;color:var(--ink);border:1px solid var(--ink);padding:5px 8px}
+.hud .tag+.tag{border-left:0}
+.hud .tag.m{background:var(--ink);color:#ffffff}
+.legend{position:absolute;left:22px;bottom:22px;background:#ffffff;border:1px solid var(--ink);padding:8px 10px;display:grid;grid-template-columns:auto auto;gap:5px 14px;pointer-events:none}
+.legend b{grid-column:1/-1;font:800 9.5px var(--f);letter-spacing:.16em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:4px;margin-bottom:2px}
+.legend span{display:flex;align-items:center;gap:6px;font:700 10px var(--f);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.legend i{width:12px;height:12px;border:1px solid var(--ink);display:inline-block}
+.hint{position:absolute;right:22px;bottom:22px;font:700 9.5px var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);pointer-events:none;text-align:right}
 
-aside{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0;overflow:auto;
-  padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));padding-block:18px 28px;gap:18px}
-.eyebrow{font:700 11px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-h1{font-family:var(--f);font-weight:800;font-stretch:var(--cond);font-size:46px;line-height:.9;letter-spacing:-.005em;text-transform:uppercase;margin:8px 0 0;text-wrap:balance}
-h1 span{color:var(--accent)}
-.sub{display:none;margin:10px 0 0;font:600 12px/1.35 var(--f);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.rotulo{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--strong);margin-top:14px}
-.rotulo div{padding:6px 8px;font:700 11.5px/1.25 var(--f);text-transform:uppercase;letter-spacing:.05em;border-right:1px solid var(--strong);border-bottom:1px solid var(--strong);min-width:0}
-.rotulo div:nth-child(2n){border-right:0}
-.rotulo div:nth-last-child(-n+2){border-bottom:0}
-.rotulo span{display:block;font-size:9px;letter-spacing:.16em;color:var(--muted);margin-bottom:3px}
+aside{background:var(--paper);border-left:2px solid var(--ink);display:flex;flex-direction:column;min-width:0;overflow:auto;
+  padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));padding-block:20px 24px;gap:16px}
+.eyebrow{font:700 10.5px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f);font-weight:800;font-stretch:var(--cond);font-size:34px;line-height:.92;text-transform:uppercase;margin:6px 0 0;text-wrap:balance}
 
-.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--strong)}
-.seg button{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 11px;font:800 17px/1 var(--f);font-stretch:var(--cond);text-transform:uppercase;letter-spacing:.01em;color:var(--fg)}
-.seg button+button{border-left:1px solid var(--strong)}
-.seg button small{display:block;font:700 9.5px var(--f);font-stretch:100%;letter-spacing:.12em;color:var(--muted);margin-top:5px}
-.seg button[aria-pressed="true"]{background:var(--on-bg);color:var(--on-fg)}
-.seg button[aria-pressed="true"] small{color:inherit;opacity:.75}
-.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--ink)}
+.seg button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:10px 8px;font:800 12.5px var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.seg button+button{border-left:1px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#ffffff}
+.seg button:focus-visible{outline:2px solid var(--red);outline-offset:-4px}
 
-ol.steps{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--strong)}
-ol.steps button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:36px 1fr;align-items:baseline;gap:8px;padding:9px 6px;cursor:pointer;
-  border-bottom:1px solid var(--line);font:700 13px/1.15 var(--f);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-ol.steps .n{font:800 15px var(--f);font-variant-numeric:tabular-nums;letter-spacing:0}
-ol.steps button:hover{color:var(--fg)}
-ol.steps button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-ol.steps button.done{color:var(--fg)}
-ol.steps button.on{background:var(--on-bg);color:var(--on-fg)}
-ol.steps button.on .n{color:var(--on-n)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));border:1px solid var(--ink)}
+ol.steps li+li button{border-left:1px solid var(--ink)}
+ol.steps button{all:unset;box-sizing:border-box;width:100%;display:block;text-align:center;padding:9px 0;cursor:pointer;font:800 14px var(--f);font-variant-numeric:tabular-nums;color:var(--muted)}
+ol.steps .t{display:none}
+ol.steps button:hover{color:var(--ink);background:var(--tint)}
+ol.steps button.done{color:var(--ink);background:var(--tint)}
+ol.steps button.on{background:var(--red);color:var(--red-ink)}
+ol.steps button:focus-visible{outline:2px solid var(--ink);outline-offset:-4px}
 
-.card{position:relative;display:grid;gap:10px}
-.bignum{display:none}
-.kick{font:700 11px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
-.card h2{margin:0;font:800 32px/.92 var(--f);font-stretch:var(--cond);text-transform:uppercase;text-wrap:balance}
-.card p{margin:0;max-width:62ch}
-dl.spec{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);border-top:1px solid var(--strong)}
-dl.spec dt,dl.spec dd{padding:7px 0;border-bottom:1px solid var(--line)}
+.card{display:grid;gap:16px}
+.stephead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.stephead .num{font:800 72px/.78 var(--f);font-stretch:var(--cond);color:var(--red);font-variant-numeric:tabular-nums}
+.kick{font:700 10.5px var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.card h2{margin:0;font:800 26px/.95 var(--f);font-stretch:var(--cond);text-transform:uppercase;text-wrap:balance}
+.card h3{margin:0 0 8px;font:800 10.5px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:5px;display:flex;justify-content:space-between}
+.card h3 em{font-style:normal;color:var(--muted)}
+ol.acts{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:a}
+ol.acts li{counter-increment:a;display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;font-size:15.5px;line-height:1.35}
+ol.acts li::before{content:counter(a);display:grid;place-items:center;width:22px;height:22px;background:var(--ink);color:#ffffff;font:800 12px var(--f);margin-top:-1px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+ul.list{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+ul.list li{display:grid;grid-template-columns:10px minmax(0,1fr);gap:8px;font-size:13.5px;line-height:1.3;color:var(--ink2)}
+ul.list li::before{content:"";width:6px;height:6px;background:var(--ink);margin-top:6px}
+.check ul.list li{grid-template-columns:16px minmax(0,1fr);font-size:14px;color:var(--ink)}
+.check ul.list li::before{width:12px;height:12px;background:none;border:1.5px solid var(--red);margin-top:2px}
+dl.spec{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr)}
+dl.spec dt,dl.spec dd{padding:6px 0;border-bottom:1px solid var(--rule)}
 dl.spec dt{font:700 10px/1.7 var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-right:14px}
 dl.spec dd{margin:0;font:700 12.5px/1.35 var(--f);text-transform:uppercase;letter-spacing:.04em;font-variant-numeric:tabular-nums}
 
-.nav{display:flex;gap:8px;flex-wrap:wrap}
-.btn{all:unset;box-sizing:border-box;cursor:pointer;padding:12px 14px;border:1px solid var(--strong);font:800 12.5px var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--fg);text-align:center}
-.btn:hover{background:color-mix(in srgb,var(--fg) 8%,transparent)}
-.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.primary:hover{filter:brightness(1.08)}
-.btn[disabled]{opacity:.35;pointer-events:none}
-.nav .grow{flex:1}
+.nav{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+.nav.sec{grid-template-columns:repeat(3,minmax(0,1fr))}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;padding:13px 10px;border:1px solid var(--ink);font:800 12px/1.1 var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);text-align:center;display:flex;align-items:center;justify-content:center}
+.nav.sec .btn{padding:10px 6px;font-size:10.5px}
+.btn:hover{background:var(--tint)}
+.btn:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.btn.primary{background:var(--red);border-color:var(--red);color:var(--red-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn[disabled]{opacity:.3;pointer-events:none}
 
-.opts{display:grid;gap:9px;border-top:1px solid var(--strong);padding-top:14px}
-.opts h3{margin:0;font:700 10.5px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.chk{display:flex;align-items:center;gap:9px;font:700 12.5px var(--f);letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
-.chk input{accent-color:var(--accent);width:16px;height:16px;margin:0}
-.note{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px 16px;border-top:1px solid var(--rule);padding-top:12px}
+.chk{display:flex;align-items:center;gap:7px;font:700 11px var(--f);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.chk input{accent-color:var(--ink);width:15px;height:15px;margin:0}
 
-/* ---- Celular ---- */
+.rotulo{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink)}
+.rotulo div{padding:6px 8px;font:700 11px/1.25 var(--f);text-transform:uppercase;letter-spacing:.05em;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);min-width:0}
+.rotulo div:nth-child(2n){border-right:0}
+.rotulo div.full{grid-column:1/-1;border-right:0;border-bottom:0}
+.rotulo span{display:block;font-size:8.5px;letter-spacing:.16em;color:var(--muted);margin-bottom:3px}
+.note{font-size:12px;line-height:1.4;color:var(--muted);margin:0}
+
 @media (max-width:860px){
   html,body{height:auto}
   .app{display:block;height:auto}
-  .viewport{position:sticky;top:0;height:52vh;height:52svh;min-height:280px;z-index:5;border-bottom:1px solid var(--strong)}
-  aside{border-left:0;overflow:visible;padding-block:16px 36px;gap:16px}
-  .hint{display:none}
-  h1{font-size:38px}
-  ol.steps{grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;border-top:0}
-  :root ol.steps button{grid-template-columns:1fr;justify-items:center;min-height:0;padding:10px 0;border:1px solid var(--line)}
-  :root ol.steps button.on{background:var(--on-bg);border-color:var(--on-bg)}
-  ol.steps .t{display:none}
-  ol.steps .n{font-size:16px}
-  .rotulo div{font-size:10.5px}
-  .lbl{font-size:9px;padding:3px 5px;letter-spacing:.06em}
+  .viewport{position:sticky;top:0;height:50vh;height:50svh;min-height:280px;z-index:5;border-bottom:2px solid var(--ink)}
+  .viewport::after{inset:6px}
+  .hud{left:14px;top:14px}
   .hud .tag{font-size:9.5px;padding:4px 6px}
-  .card h2{font-size:28px}
-  .nav .btn{flex:1}
+  .legend,.hint{display:none}
+  aside{border-left:0;overflow:visible;padding-block:16px 32px}
+  h1{font-size:30px}
+  .stephead .num{font-size:60px}
+  .card h2{font-size:23px}
+  .lbl{font-size:9px;padding:3px 5px}
 }
 </style>
 
@@ -129,19 +128,24 @@ dl.spec dd{margin:0;font:700 12.5px/1.35 var(--f);text-transform:uppercase;lette
     <canvas id="c" aria-label="Modelo 3D del montaje de la piel metálica"></canvas>
     <div class="labels" id="labels"></div>
     <div class="hud"><span class="tag m" id="hudMode">Tramo recto</span><span class="tag" id="hudStep">Paso 1/8</span></div>
-    <div class="hint">Arrastrá para girar · rueda para zoom · clic derecho para desplazar</div>
+    <div class="legend" aria-label="Referencias de materiales">
+      <b>Referencias</b>
+      <span><i style="background:#d7141f"></i>Panel chapa</span>
+      <span><i style="background:#3e4348"></i>Tubo 40×70</span>
+      <span><i style="background:#737a82"></i>Ángulo L</span>
+      <span><i style="background:#a7713f"></i>Refuerzo</span>
+      <span><i style="background:#eeede8"></i>Placa yeso</span>
+      <span><i style="background:#e5c25a"></i>Lana vidrio</span>
+      <span><i style="background:#b3bac0"></i>Perfil Durlock</span>
+      <span><i style="background:#1f5fd1"></i>Replanteo</span>
+    </div>
+    <div class="hint">Arrastrar: girar · Rueda: zoom<br>Clic derecho: desplazar</div>
   </div>
 
   <aside>
     <header>
       <div class="eyebrow">Detalle constructivo · Sala de capacitación</div>
-      <h1>Piel <span>metálica</span> sobre tabique de Durlock</h1>
-      <div class="rotulo">
-        <div><span>Proyecto</span>Oficinas Coca-Cola Argentina</div>
-        <div><span>Sitio</span>Centro Empresarial Núñez</div>
-        <div><span>Lámina</span>Detalle constructivo · Piel metálica, sala de capacitación</div>
-        <div><span>Materia</span>Diseño Corporativo · UADE</div>
-      </div>
+      <h1>Piel metálica sobre tabique de Durlock</h1>
     </header>
 
     <div class="seg" id="modes" role="group" aria-label="Tramo">
@@ -149,27 +153,33 @@ dl.spec dd{margin:0;font:700 12.5px/1.35 var(--f);text-transform:uppercase;lette
       <button type="button" data-m="rolada" aria-pressed="false">Tramo curvo</button>
     </div>
 
-    <ol class="steps" id="steps"></ol>
+    <ol class="steps" id="steps" aria-label="Pasos de montaje"></ol>
 
     <div class="card" id="card"></div>
 
     <div class="nav">
       <button class="btn" id="prev" type="button">← Anterior</button>
-      <button class="btn" id="replay" type="button">Repetir paso</button>
-      <button class="btn primary grow" id="next" type="button">Siguiente →</button>
+      <button class="btn primary" id="next" type="button">Siguiente paso →</button>
     </div>
-    <div class="nav">
-      <button class="btn grow" id="playAll" type="button">▶ Ver todo el montaje</button>
-      <button class="btn grow" id="detail" type="button">Detalle del encastre</button>
+    <div class="nav sec">
+      <button class="btn" id="replay" type="button">Repetir</button>
+      <button class="btn" id="playAll" type="button">▶ Secuencia</button>
+      <button class="btn" id="detail" type="button">Detalle gancho</button>
     </div>
 
     <div class="opts">
-      <h3>Vista</h3>
-      <label class="chk"><input type="checkbox" id="optCeil" checked> Mostrar cielorraso y losa</label>
-      <label class="chk"><input type="checkbox" id="optGhost"> Transparentar paneles</label>
-      <label class="chk"><input type="checkbox" id="optLabels" checked> Mostrar etiquetas</label>
+      <label class="chk"><input type="checkbox" id="optCeil" checked> Cielorraso</label>
+      <label class="chk"><input type="checkbox" id="optGhost"> Paneles transparentes</label>
+      <label class="chk"><input type="checkbox" id="optLabels" checked> Etiquetas</label>
     </div>
 
+    <div class="rotulo">
+      <div><span>Proyecto</span>Oficinas Coca-Cola Argentina</div>
+      <div><span>Sitio</span>Centro Empresarial Núñez</div>
+      <div><span>Materia</span>Diseño Corporativo · UADE</div>
+      <div><span>Unidades</span>Metros · escala real</div>
+      <div class="full"><span>Lámina</span>Detalle constructivo · Piel metálica, sala de capacitación</div>
+    </div>
     <p class="note" id="note"></p>
   </aside>
 </div>
@@ -254,6 +264,48 @@ const STEP_OVR = {
     7:{p:"La piel sigue la curva sin aristas y las juntas quedan cada 0,61 m, parecido al módulo del tramo recto. Es más prolija pero más cara: cada panel se fabrica a medida y no se puede reemplazar por uno recto.",
        s:[["Cara de piel","R 1,94"],["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso · 1 cm del cielorraso"],["Paneles","5 rolados de 0,60 m + rectos de 0,70 m"]]}
   })
+};
+
+/* ---------- Ficha de obra por paso: qué se hace, materiales, herramientas, control ---------- */
+const OBRA = [
+  {a:["Verificar el nivel de piso terminado (NPT ±0,00).","Verificar altura de cielorraso (+3,21) y de losa (+3,81).","Dejar el sector libre para trabajar."],
+   m:["Planos de detalle"], h:["Nivel láser","Cinta métrica"],
+   c:["Piso sin desniveles mayores a 3 mm","Nivel de cielorraso marcado"]},
+  {a:["Fijar soleras de 70 mm a piso y losa con tarugos.","Colocar montantes cada 40 cm, encastrados en las soleras.","Atornillar refuerzos de fenólico entre montantes en los 4 niveles de anclaje."],
+   m:["Soleras y montantes 70 mm","Fenólico 18 mm × 15 cm","Tarugos y tornillos T1"], h:["Atornilladora","Nivel láser","Tijera para chapa"],
+   c:["Montantes a plomo","Refuerzos a +0,35 / +1,30 / +2,25 / +3,05"]},
+  {a:["Colocar panel rígido y lana de vidrio entre montantes.","Atornillar doble placa de 12,5 mm de cada lado, con juntas trabadas.","Marcar en el piso la posición de los refuerzos antes de cerrar."],
+   m:["Lana de vidrio + panel rígido","Placas de yeso 12,5 mm","Tornillos T2"], h:["Atornilladora","Cutter"],
+   c:["Espesor terminado 12 cm","Refuerzos marcados en piso"]},
+  {a:["Marcar los ejes de perfiles cada 70 cm, en piso y tabique, arrancando desde un extremo.","Trazar las líneas de nivel de los anclajes.","Marcar en el piso la cara de la piel a 10 cm del tabique."],
+   m:["Tiza de marcar"], h:["Nivel láser","Cinta métrica","Hilo entizado"],
+   c:["Ejes sobre los refuerzos","Módulo 0,70 m sin acumular error"]},
+  {a:["Presentar los ángulos de a pares, uno a cada lado del eje.","Atornillar cada ángulo al refuerzo con 2 tornillos.","Repetir en los 4 niveles."],
+   m:["Ángulos 50 × 50 × 3 mm, 8 cm","Tornillos para madera"], h:["Atornilladora","Nivel"],
+   c:["Luz entre ángulos = 40 mm (ancho del tubo)","Ángulos alineados en vertical"]},
+  {a:["Calzar el tubo entre los pares de L, apoyado en el piso.","Aplomar el perfil.","Fijar la planchuela al piso con 2 brocas.","Pasar un bulón M8 en cada nivel y ajustar."],
+   m:["Tubo 40 × 70 mm con planchuela soldada","Brocas de expansión","Bulones M8 + tuercas"], h:["Taladro percutor","Llave 13 mm","Nivel / plomada"],
+   c:["Perfil a plomo en las dos direcciones","Ranuras de cuelgue hacia afuera","Cara del tubo a 78 mm del tabique"]},
+  {a:["Entre 2 personas, presentar el panel con los ganchos frente a las ranuras.","Empujar hasta que el retorno toque el perfil.","Bajar 2,5 cm hasta que trabe.","Seguir con el panel siguiente, de un extremo al otro."],
+   m:["Paneles chapa 2 mm, 0,70 × 3,19 m"], h:["Ventosas","Guantes"],
+   c:["Junta de 1 cm entre paneles","1 cm libre al piso y al cielorraso","El panel no sube sin levantarlo a propósito"]},
+  {a:["Revisar alineación y juntas de toda la piel.","Limpiar marcas y huellas.","Retocar pintura donde haga falta."],
+   m:["Pintura de retoque"], h:["Paño","Nivel láser"],
+   c:["Juntas parejas de 1 cm","Plano continuo, sin paneles salidos"]}
+];
+STEPS.forEach((s,i)=>Object.assign(s,OBRA[i]));
+const OBRA_CURVA = {
+  1:{a:["Curvar las soleras cortando una de las alas cada pocos centímetros.","Fijar las soleras a piso y losa siguiendo el radio (R 1,72 / R 1,84).","Colocar montantes cada 7,5° en la curva (≈ 23 cm) y cada 36 cm en recto.","Colocar refuerzos de fenólico en tramos rectos cortos entre montantes."],
+     c:["Radio parejo en todo el arco","Montantes a plomo"]},
+  2:{a:["Colocar panel rígido y lana de vidrio.","Humedecer las placas de 12,5 mm y curvarlas antes de atornillar.","Atornillar doble placa de cada lado."],
+     c:["Radio mínimo de placa verificado con Durlock","Superficie sin quiebres"]},
+  3:{a:["Cortar una plantilla de terciado con radio R 1,94.","Trazar en el piso el arco de la cara de la piel.","Marcar un eje de perfil cada 18°, en dirección radial.","Trazar las líneas de nivel de los anclajes."],
+     m:["Plantilla de terciado R 1,94","Tiza de marcar"], c:["Ejes radiales: apuntan al centro de la curva"]},
+  4:{a:["Presentar los ángulos de a pares, orientados hacia el centro de la curva.","Atornillar cada ángulo al refuerzo con 2 tornillos.","Repetir en los 4 niveles."]},
+  5:{c:["Perfil a plomo","Perfil radial: perpendicular al tabique","Ranuras de cuelgue hacia afuera"]},
+  6:{a:["Entre 2 personas, presentar el panel con los ganchos frente a las ranuras.","Empujar y bajar 2,5 cm hasta que trabe.","Arrancar por el panel recto de un extremo y seguir por la curva."],
+     m:["5 paneles rolados R 1,94 (0,60 m de arco)","2 paneles rectos 0,70 m"], c:["Junta de 1 cm","Curva continua, sin quiebres"]},
+  7:{c:["Juntas parejas de 1 cm","Curva continua, sin paneles salidos"]}
 };
 
 /* ---------- Escena ---------- */
@@ -544,6 +596,16 @@ const cotC={facetada:[],rolada:[]};
 });
 CUR=['recto'];
 
+for(const i in OBRA_CURVA) STEP_OVR.rolada[i] = Object.assign({}, STEP_OVR.rolada[i]||{}, OBRA_CURVA[i]);
+/* Aristas negras finas sobre todas las piezas, para lectura de plano */
+const edgeMat = new THREE.LineBasicMaterial({color:0x111111, transparent:true, opacity:.5});
+const SKIP = [mat.ceil, mat.slab, mat.chalk, mat.floor];
+items.forEach(it=>it.obj.traverse(o=>{
+  if(o.isMesh && !SKIP.includes(o.material) && !o.userData.edge){
+    const e=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,25), edgeMat); e.userData.edge=true; o.add(e);
+  }
+}));
+
 /* ---------- Vistas y etiquetas por tramo ---------- */
 const VIEWS = {
   recto:[
@@ -656,7 +718,10 @@ function stepData(i){ return Object.assign({}, STEPS[i], STEP_OVR[mode][i]||{});
 function renderUI(){
   [...stepsEl.querySelectorAll('button')].forEach((b,i)=>{ b.classList.toggle('on',i+1===current); b.classList.toggle('done',i+1<current); b.setAttribute('aria-current',i+1===current?'step':'false'); });
   const s=stepData(current-1);
-  card.innerHTML=`<div class="bignum" aria-hidden="true">${String(current).padStart(2,'0')}</div><div class="kick">Paso ${current} de ${STEPS.length} · ${s.k}</div><h2>${s.t}</h2><p>${s.p}</p><dl class="spec">${s.s.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl>`;
+  const li = arr => (arr||[]).map(x=>`<li>${x}</li>`).join('');
+  card.innerHTML=`<div class="stephead"><span class="num">${String(current).padStart(2,'0')}</span><div><div class="kick">Paso ${current} de ${STEPS.length} · ${s.k}</div><h2>${s.t}</h2></div></div>
+    <section><h3>Qué se hace</h3><ol class="acts">${li(s.a)}</ol></section>
+    <section><h3>Datos</h3><dl class="spec">${s.s.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></section>`;
   document.getElementById('hudStep').textContent=detailOn?'Detalle del encastre':`Paso ${current}/${STEPS.length}`;
   document.getElementById('hudMode').textContent=MODE_NAME[mode];
   document.getElementById('note').textContent=NOTES[mode];
