@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Visor 3D del montaje de la piel metálica sobre tabique de Durlock. Sala de capacitación, oficinas Coca-Cola Argentina, Centro Empresarial Núñez.">
+<meta name="theme-color" content="#e3001b">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}*,*::before,*::after{box-sizing:border-box}</style><title>Montaje de la piel metálica</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<style>
+/* Layout: visor 3D grande + columna de pasos; en celular visor fijo arriba y pasos abajo.
+   Estética de lámina técnica: blanco, negro y rojo Coca-Cola, todo en mayúsculas */
+:root{
+  --bg:#f4f4f2; --panel:#ffffff; --fg:#111111; --muted:#6c6c69; --line:#dcdcd8; --strong:#111111;
+  --accent:#e3001b; --accent-ink:#ffffff; --chalk:#1f5fd1; --viewport:#e8e8e4;
+  --label-bg:#ffffff; --label-fg:#111111; --label-line:#111111;
+  --dim:#e3001b; --dim-ink:#ffffff; --on-bg:#111111; --on-fg:#ffffff; --on-n:#ff2a3c;
+  --f:"Akzidenz-Grotesk Pro","Akzidenz-Grotesk","AkzidenzGrotesk","Akzidenz Grotesk","Archivo","Helvetica Neue",Arial,sans-serif;
+  --cond:72%;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121212; --panel:#181818; --fg:#f1f1ee; --muted:#9a9a96; --line:#2d2d2b; --strong:#f1f1ee;
+  --accent:#ff2a3c; --accent-ink:#ffffff; --chalk:#6d9cff; --viewport:#1d1d1c;
+  --label-bg:#181818; --label-fg:#f1f1ee; --label-line:#f1f1ee;
+  --dim:#ff2a3c; --dim-ink:#ffffff; --on-bg:#f1f1ee; --on-fg:#121212; --on-n:#e3001b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121212; --panel:#181818; --fg:#f1f1ee; --muted:#9a9a96; --line:#2d2d2b; --strong:#f1f1ee;
+  --accent:#ff2a3c; --accent-ink:#ffffff; --chalk:#6d9cff; --viewport:#1d1d1c;
+  --label-bg:#181818; --label-fg:#f1f1ee; --label-line:#f1f1ee;
+  --dim:#ff2a3c; --dim-ink:#ffffff; --on-bg:#f1f1ee; --on-fg:#121212; --on-n:#e3001b; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f);font-size:15px;line-height:1.42}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 420px;height:100%}
+.viewport{position:relative;background:var(--viewport);min-width:0;overflow:hidden}
+#c{display:block;width:100%;height:100%;touch-action:none}
+.labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;transform:translate(11px,-50%);white-space:nowrap;font:700 10.5px/1.1 var(--f);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--label-fg);background:var(--label-bg);border:1px solid var(--label-line);padding:4px 7px}
+.lbl::before{content:"";position:absolute;left:-12px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:var(--dim);box-shadow:0 0 0 2px var(--viewport)}
+.lbl.cota{background:var(--dim);border-color:var(--dim);color:var(--dim-ink)}
+.hud{position:absolute;left:max(14px,env(safe-area-inset-left,0px));top:12px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.hud .tag{font:700 10.5px var(--f);letter-spacing:.12em;text-transform:uppercase;background:var(--label-bg);color:var(--label-fg);border:1px solid var(--label-line);padding:5px 8px}
+.hud .tag.m{background:var(--dim);border-color:var(--dim);color:var(--dim-ink)}
+.hint{position:absolute;right:14px;bottom:12px;font:700 10px var(--f);letter-spacing:.12em;text-transform:uppercase;color:#7b7b78;pointer-events:none}
+
+aside{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0;overflow:auto;
+  padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));padding-block:18px 28px;gap:18px}
+.eyebrow{font:700 11px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f);font-weight:800;font-stretch:var(--cond);font-size:46px;line-height:.9;letter-spacing:-.005em;text-transform:uppercase;margin:8px 0 0;text-wrap:balance}
+h1 span{color:var(--accent)}
+.sub{display:none;margin:10px 0 0;font:600 12px/1.35 var(--f);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rotulo{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--strong);margin-top:14px}
+.rotulo div{padding:6px 8px;font:700 11.5px/1.25 var(--f);text-transform:uppercase;letter-spacing:.05em;border-right:1px solid var(--strong);border-bottom:1px solid var(--strong);min-width:0}
+.rotulo div:nth-child(2n){border-right:0}
+.rotulo div:nth-last-child(-n+2){border-bottom:0}
+.rotulo span{display:block;font-size:9px;letter-spacing:.16em;color:var(--muted);margin-bottom:3px}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--strong)}
+.seg button{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 11px;font:800 17px/1 var(--f);font-stretch:var(--cond);text-transform:uppercase;letter-spacing:.01em;color:var(--fg)}
+.seg button+button{border-left:1px solid var(--strong)}
+.seg button small{display:block;font:700 9.5px var(--f);font-stretch:100%;letter-spacing:.12em;color:var(--muted);margin-top:5px}
+.seg button[aria-pressed="true"]{background:var(--on-bg);color:var(--on-fg)}
+.seg button[aria-pressed="true"] small{color:inherit;opacity:.75}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+
+ol.steps{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--strong)}
+ol.steps button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:36px 1fr;align-items:baseline;gap:8px;padding:9px 6px;cursor:pointer;
+  border-bottom:1px solid var(--line);font:700 13px/1.15 var(--f);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+ol.steps .n{font:800 15px var(--f);font-variant-numeric:tabular-nums;letter-spacing:0}
+ol.steps button:hover{color:var(--fg)}
+ol.steps button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+ol.steps button.done{color:var(--fg)}
+ol.steps button.on{background:var(--on-bg);color:var(--on-fg)}
+ol.steps button.on .n{color:var(--on-n)}
+
+.card{position:relative;display:grid;gap:10px}
+.bignum{display:none}
+.kick{font:700 11px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.card h2{margin:0;font:800 32px/.92 var(--f);font-stretch:var(--cond);text-transform:uppercase;text-wrap:balance}
+.card p{margin:0;max-width:62ch}
+dl.spec{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);border-top:1px solid var(--strong)}
+dl.spec dt,dl.spec dd{padding:7px 0;border-bottom:1px solid var(--line)}
+dl.spec dt{font:700 10px/1.7 var(--f);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-right:14px}
+dl.spec dd{margin:0;font:700 12.5px/1.35 var(--f);text-transform:uppercase;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;padding:12px 14px;border:1px solid var(--strong);font:800 12.5px var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--fg);text-align:center}
+.btn:hover{background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.nav .grow{flex:1}
+
+.opts{display:grid;gap:9px;border-top:1px solid var(--strong);padding-top:14px}
+.opts h3{margin:0;font:700 10.5px var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.chk{display:flex;align-items:center;gap:9px;font:700 12.5px var(--f);letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.chk input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.note{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin:0}
+
+/* ---- Celular ---- */
+@media (max-width:860px){
+  html,body{height:auto}
+  .app{display:block;height:auto}
+  .viewport{position:sticky;top:0;height:52vh;height:52svh;min-height:280px;z-index:5;border-bottom:1px solid var(--strong)}
+  aside{border-left:0;overflow:visible;padding-block:16px 36px;gap:16px}
+  .hint{display:none}
+  h1{font-size:38px}
+  ol.steps{grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;border-top:0}
+  :root ol.steps button{grid-template-columns:1fr;justify-items:center;min-height:0;padding:10px 0;border:1px solid var(--line)}
+  :root ol.steps button.on{background:var(--on-bg);border-color:var(--on-bg)}
+  ol.steps .t{display:none}
+  ol.steps .n{font-size:16px}
+  .rotulo div{font-size:10.5px}
+  .lbl{font-size:9px;padding:3px 5px;letter-spacing:.06em}
+  .hud .tag{font-size:9.5px;padding:4px 6px}
+  .card h2{font-size:28px}
+  .nav .btn{flex:1}
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <div class="viewport" id="vp">
+    <canvas id="c" aria-label="Modelo 3D del montaje de la piel metálica"></canvas>
+    <div class="labels" id="labels"></div>
+    <div class="hud"><span class="tag m" id="hudMode">Tramo recto</span><span class="tag" id="hudStep">Paso 1/8</span></div>
+    <div class="hint">Arrastrá para girar · rueda para zoom · clic derecho para desplazar</div>
+  </div>
+
+  <aside>
+    <header>
+      <div class="eyebrow">Detalle constructivo · Sala de capacitación</div>
+      <h1>Piel <span>metálica</span> sobre tabique de Durlock</h1>
+      <div class="rotulo">
+        <div><span>Proyecto</span>Oficinas Coca-Cola Argentina</div>
+        <div><span>Sitio</span>Centro Empresarial Núñez</div>
+        <div><span>Lámina</span>Detalle constructivo · Piel metálica, sala de capacitación</div>
+        <div><span>Materia</span>Diseño Corporativo · UADE</div>
+      </div>
+    </header>
+
+    <div class="seg" id="modes" role="group" aria-label="Tramo">
+      <button type="button" data-m="recto" aria-pressed="true">Tramo recto</button>
+      <button type="button" data-m="rolada" aria-pressed="false">Tramo curvo</button>
+    </div>
+
+    <ol class="steps" id="steps"></ol>
+
+    <div class="card" id="card"></div>
+
+    <div class="nav">
+      <button class="btn" id="prev" type="button">← Anterior</button>
+      <button class="btn" id="replay" type="button">Repetir paso</button>
+      <button class="btn primary grow" id="next" type="button">Siguiente →</button>
+    </div>
+    <div class="nav">
+      <button class="btn grow" id="playAll" type="button">▶ Ver todo el montaje</button>
+      <button class="btn grow" id="detail" type="button">Detalle del encastre</button>
+    </div>
+
+    <div class="opts">
+      <h3>Vista</h3>
+      <label class="chk"><input type="checkbox" id="optCeil" checked> Mostrar cielorraso y losa</label>
+      <label class="chk"><input type="checkbox" id="optGhost"> Transparentar paneles</label>
+      <label class="chk"><input type="checkbox" id="optLabels" checked> Mostrar etiquetas</label>
+    </div>
+
+    <p class="note" id="note"></p>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const D2R = Math.PI/180;
+/* ---------- Datos del detalle (metros) ---------- */
+const N_PANELS = 5, MOD = 0.70;
+const AXES = Array.from({length:N_PANELS+1},(_,i)=>i*MOD);
+const L_LEVELS = [0.35, 1.30, 2.25, 3.05];
+const HOOKS = [0.55, 1.35, 2.15, 2.95];
+const Y_CEIL = 3.21, Y_SLAB = 3.81;
+const X0 = -0.40, X1 = 3.90;
+const MONT = []; for(let x=X0; x<=X1+1e-6; x+=0.40) MONT.push(+x.toFixed(3));
+/* Curva: radios del croquis de planta */
+const R_IN = 1.72, R_OUT = 1.84, RF = R_OUT + 0.10, TAB_EXT = 1.10, EXT = 0.70;
+
+const MODE_NAME = {recto:"Tramo recto", facetada:"Curva facetada", rolada:"Tramo curvo · rolado"};
+const NOTES = {
+  recto:"Tramo modelado: 5 paneles (3,50 m). Medidas de tabique, separación, alturas y paneles según croquis. Secciones de tubo, ángulos, refuerzos y fijaciones son propuestas a confirmar.",
+  facetada:"Curva de 90° con tabique entre R 1,72 y R 1,84 (12 cm) y cara de piel en R 1,94. Se dibuja un panel recto de 0,70 m a cada lado para ver el encuentro. Separación de montantes en curva y radio de curvado de placas a verificar con Durlock.",
+  rolada:"Curva de 90° con tabique entre R 1,72 y R 1,84 (12 cm) y cara de piel en R 1,94. Se dibuja un panel recto de 0,70 m a cada lado para ver el encuentro. Separación de montantes en curva y radio de curvado de placas a verificar con Durlock."
+};
+
+const STEPS = [
+  {t:"Situación existente", k:"Sector exterior de la sala",
+   p:"La piel va del lado de afuera de la sala de capacitación, hacia la circulación. Se toma como referencia el piso terminado, el cielorraso suspendido y la losa.",
+   s:[["NPT","±0,00 m"],["Cielorraso","+3,21 m"],["Losa","+3,81 m"]]},
+  {t:"Estructura del tabique 01", k:"Soleras, montantes y refuerzos",
+   p:"Soleras de 70 mm fijadas a piso y losa, montantes cada 40 cm. A la altura de cada anclaje se colocan refuerzos de fenólico entre montantes: la placa de yeso sola no sirve para atornillar los ángulos.",
+   s:[["Perfilería","Soleras y montantes 70 mm, acero galvanizado"],["Montantes","c/ 0,40 m"],["Refuerzos","Fenólico 18 mm × 15 cm"],["Niveles","+0,35 · +1,30 · +2,25 · +3,05"]]},
+  {t:"Aislación y doble placa", k:"Cierre del tabique",
+   p:"Se rellena con panel rígido y lana de vidrio, y se cierra con doble placa de cada lado. Antes de cerrar conviene marcar en el piso y la losa dónde quedaron los refuerzos.",
+   s:[["Relleno","Panel rígido + lana de vidrio"],["Placas","2 × 12,5 mm por cara"],["Espesor total","12 cm"]]},
+  {t:"Replanteo", k:"Ejes y niveles",
+   p:"Se marcan los ejes de los perfiles cada 70 cm, en el piso y en el tabique, y las líneas de nivel de los anclajes. Se arranca desde un extremo para que los paneles queden enteros.",
+   s:[["Ejes","c/ 0,70 m"],["Anclajes","4 niveles, sobre los refuerzos"],["Cara de la piel","a 10 cm del tabique"]]},
+  {t:"Anclajes L", k:"Ángulos al tabique",
+   p:"Se atornillan los ángulos L al tabique, de a pares, uno a cada lado del eje. Los tornillos toman el refuerzo de fenólico, no solo la placa.",
+   s:[["Ángulo","Acero 50 × 50 × 3 mm, 8 cm de alto"],["Fijación","2 tornillos por ángulo al refuerzo"],["Cantidad","2 ángulos × 4 niveles por perfil"]]},
+  {t:"Perfiles verticales", k:"Tubo apoyado en el piso",
+   p:"Cada perfil viene con la planchuela de base soldada en taller. Se calza entre los pares de L, se aploma y se fija al piso con brocas y a las L con un bulón pasante. El peso de la piel baja al piso; las L solo lo mantienen a plomo.",
+   s:[["Perfil","Tubo de acero 40 × 70 mm, pintado"],["Base","Planchuela 100 × 100 × 6 mm + 2 brocas"],["Unión a L","Bulón pasante M8 por nivel"],["Cara frontal","Ranuras troqueladas para los ganchos"]]},
+  {t:"Colgado de paneles", k:"Encastre por gancho",
+   p:"Los paneles se cuelgan de a uno, de un extremo al otro. Se presentan con los ganchos frente a las ranuras, se empujan hasta el perfil y se bajan 2,5 cm hasta que traban. En cada perfil se enganchan los bordes de dos paneles.",
+   s:[["Panel","Chapa de acero 2 mm plegada en bandeja"],["Medida","0,70 × 3,19 m (junta de 1 cm)"],["Ganchos","4 por lado"],["Peso","≈ 38 kg por panel (estimado): 2 personas"]]},
+  {t:"Piel terminada", k:"Cotas principales",
+   p:"Queda una piel continua con juntas verticales de 1 cm, despegada 1 cm del piso y 1 cm del cielorraso. Cualquier panel se puede sacar levantándolo y tirando hacia afuera.",
+   s:[["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso · 1 cm del cielorraso"],["Módulo","0,70 m"],["Alto de panel","3,19 m"]]}
+];
+/* Textos que cambian en la curva (índice de paso → reemplazo) */
+const CURVE_COMMON = {
+  1:{p:"En la curva las soleras se curvan cortando una de las alas cada pocos centímetros, y los montantes se acercan: uno cada 7,5° (unos 23 cm sobre el arco). Los refuerzos de fenólico van en tramos rectos cortos entre montantes, así no hay que curvar madera.",
+     s:[["Radios","Interior R 1,72 · exterior R 1,84"],["Montantes","c/ 7,5° en curva · c/ 0,36 m en recto"],["Soleras","70 mm con alas cortadas para curvar"],["Refuerzos","Fenólico 18 mm en tramos rectos"]]},
+  2:{p:"Mismo relleno que el tramo recto. En la curva las placas de 12,5 mm se curvan humedeciéndolas antes de atornillar. Si el radio no da para esa placa, se reemplaza por placas finas de 6,5 mm en más capas.",
+     s:[["Relleno","Panel rígido + lana de vidrio"],["Placas","12,5 mm curvadas en húmedo (radio a verificar)"],["Espesor total","12 cm, igual que en recto"]]},
+  4:{p:"Igual que en recto, pero cada par de L queda orientado hacia el centro de la curva, en dirección radial. Así el tubo queda perpendicular al tabique en cada punto.",
+     s:[["Ángulo","Acero 50 × 50 × 3 mm, 8 cm de alto"],["Orientación","Radial, hacia el centro de la curva"],["Fijación","2 tornillos por ángulo al refuerzo"]]},
+  5:{p:"Los perfiles son los mismos que en el tramo recto: se calzan entre las L, quedan radiales, se aploman y se fijan al piso y a las L. Los dos perfiles de las puntas de la curva son también los primeros de los tramos rectos.",
+     s:[["Perfil","Tubo de acero 40 × 70 mm"],["Base","Planchuela 100 × 100 × 6 mm + 2 brocas"],["Unión a L","Bulón pasante M8 por nivel"]]}
+};
+const STEP_OVR = {
+  recto:{},
+  facetada:Object.assign({}, CURVE_COMMON, {
+    3:{p:"La cara de la piel queda en R 1,94. Se dibuja el arco en el piso con una plantilla de terciado cortada a ese radio (el centro de la curva cae dentro de la sala) y se marca un eje de perfil cada 10°.",
+       s:[["Cara de piel","R 1,94"],["Ejes","c/ 10° (cuerda 0,34 m)"],["Anclajes","4 niveles, sobre los refuerzos"]]},
+    5:Object.assign({}, CURVE_COMMON[5], {s:CURVE_COMMON[5].s.concat([["Cantidad","10 perfiles en la curva"]])}),
+    6:{p:"La curva se arma con 9 paneles planos, uno por cada 10°, plegados igual que los rectos. Cada faceta se aleja del arco 7 mm como máximo en el centro, así que entra sin problema en los 10 cm. Los paneles rectos de las puntas se cuelgan igual que en el tramo recto.",
+       s:[["Panel curva","0,33 × 3,19 m, plano"],["Facetas","9 × 10°"],["Flecha","7 mm máx. contra el arco"],["Fabricación","Plegado común, sin rolar"]]},
+    7:{p:"Se lee como curva de lejos y como un polígono de cerca: las juntas caen en las aristas. Es la opción más simple y barata, porque usa el mismo panel y el mismo encastre que el tramo recto.",
+       s:[["Cara de piel","R 1,94"],["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso · 1 cm del cielorraso"],["Paneles","9 facetas de 0,33 m + rectos de 0,70 m"]]}
+  }),
+  rolada:Object.assign({}, CURVE_COMMON, {
+    3:{p:"La cara de la piel queda en R 1,94. Se dibuja el arco en el piso con una plantilla de terciado cortada a ese radio (el centro de la curva cae dentro de la sala) y se marca un eje de perfil cada 18°.",
+       s:[["Cara de piel","R 1,94"],["Ejes","c/ 18° (arco 0,61 m)"],["Anclajes","4 niveles, sobre los refuerzos"]]},
+    5:Object.assign({}, CURVE_COMMON[5], {s:CURVE_COMMON[5].s.concat([["Cantidad","6 perfiles en la curva"]])}),
+    6:{p:"La curva se arma con 5 paneles rolados en taller a R 1,94, de 18° cada uno. Los retornos laterales y los ganchos son iguales a los del tramo recto. Arriba y abajo, como una bandeja no se puede rolar con las pestañas ya plegadas, conviene soldar un perfil curvo o cortar las pestañas en gajos.",
+       s:[["Panel curva","0,60 m de arco × 3,19 m"],["Paneles","5 × 18°"],["Rolado","R 1,94 en taller"],["Pestañas","Perfil curvo soldado arriba y abajo"]]},
+    7:{p:"La piel sigue la curva sin aristas y las juntas quedan cada 0,61 m, parecido al módulo del tramo recto. Es más prolija pero más cara: cada panel se fabrica a medida y no se puede reemplazar por uno recto.",
+       s:[["Cara de piel","R 1,94"],["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso · 1 cm del cielorraso"],["Paneles","5 rolados de 0,60 m + rectos de 0,70 m"]]}
+  })
+};
+
+/* ---------- Escena ---------- */
+const canvas = document.getElementById('c'), vp = document.getElementById('vp');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = .08;
+controls.minDistance = 0.12; controls.maxDistance = 16;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.85);
+sun.position.set(4.5,6.5,6); sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:1,far:20});
+sun.target.position.set(1.5,1.5,0.5); scene.add(sun, sun.target);
+const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-4,2,3); scene.add(fill);
+
+const M = (c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8,metalness:0},o));
+const mat = {
+  floor:M(0xcfcbc4,{roughness:.95}), slab:M(0xa9a7a3,{transparent:true,opacity:.18,depthWrite:false}),
+  ceil:M(0xffffff,{transparent:true,opacity:.22,depthWrite:false}),
+  galv:M(0xb3bac0,{metalness:.55,roughness:.38}), wood:M(0xa7713f,{roughness:.7}),
+  wool:M(0xe5c25a,{roughness:1}), rigid:M(0xd8b04a,{roughness:1}), placa:M(0xeeede8,{roughness:.9}),
+  tube:M(0x3e4348,{metalness:.45,roughness:.45}), angle:M(0x737a82,{metalness:.6,roughness:.4}),
+  screw:M(0xd5d8dc,{metalness:.8,roughness:.25}), slot:M(0x08090a,{roughness:1}),
+  chalk:new THREE.MeshBasicMaterial({color:0x1f5fd1}), dim:new THREE.LineBasicMaterial({color:0xd7141f})
+};
+const PANEL_COL = {rojo:0xd7141f, naranja:0xf7860f, verde:0x00a14b};
+const panelMat = {}; for(const k in PANEL_COL) panelMat[k] = M(PANEL_COL[k],{metalness:.25,roughness:.42,side:THREE.DoubleSide});
+
+function box(x0,x1,y0,y1,z0,z1,m,shadow=true){
+  const g = new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0);
+  const o = new THREE.Mesh(g,m); o.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
+  o.castShadow = o.receiveShadow = shadow; return o;
+}
+function pivotBox(x0,x1,y0,y1,z0,z1,m){
+  const w=x1-x0,h=y1-y0,d=z1-z0, g=new THREE.BoxGeometry(w,h,d); g.translate(w/2,h/2,d/2);
+  const o=new THREE.Mesh(g,m); o.position.set(x0,y0,z0); return o;
+}
+function cyl(r,len,m,axis){
+  const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,14),m);
+  if(axis==='x') o.rotation.z=Math.PI/2; if(axis==='z') o.rotation.x=Math.PI/2;
+  o.castShadow=true; return o;
+}
+/* Sector de anillo extruido en altura (centro en el origen, ángulo medido desde +x hacia +z) */
+function arcShell(r0,r1,th0,th1,y0,y1,m,shadow=true){
+  const s=new THREE.Shape(); s.absarc(0,0,r1,th0,th1,false); s.absarc(0,0,r0,th1,th0,true); s.closePath();
+  const seg=Math.max(6,Math.ceil((th1-th0)/D2R/1.5));
+  const g=new THREE.ExtrudeGeometry(s,{depth:y1-y0,bevelEnabled:false,curveSegments:seg});
+  g.rotateX(Math.PI/2); g.translate(0,y1,0);
+  const o=new THREE.Mesh(g,m); o.castShadow=o.receiveShadow=shadow; return o;
+}
+
+/* Registro de piezas animadas, por tramo */
+const MODES=['recto','facetada','rolada'];
+let CUR=['recto'];
+const items = [];
+function reg(obj, step, o={}){
+  scene.add(obj);
+  obj.userData.final = obj.position.clone();
+  items.push({obj, step, modes:o.modes||CUR, path:o.path||null, grow:o.grow||null, dur:o.dur||0.9, delay:o.delay||0, start:0});
+  obj.visible = false; return obj;
+}
+const G = ()=>new THREE.Group();
+const panelMeshes=[]; const panelGroups={recto:[],facetada:[],rolada:[]};
+
+/* Piezas comunes */
+function angle(side){
+  const g=G(), s=side, h=0.04;
+  const xa = s>0 ? [0.020,0.023] : [-0.023,-0.020];
+  const xf = s>0 ? [0.020,0.070] : [-0.070,-0.020];
+  g.add(box(xa[0],xa[1],-h,h,0.003,0.053,mat.angle));
+  g.add(box(xf[0],xf[1],-h,h,0,0.003,mat.angle));
+  [-0.02,0.02].forEach(dy=>{ const sc=cyl(0.005,0.004,mat.screw,'z'); sc.position.set(s*0.050,dy,0.005); g.add(sc); });
+  return g;
+}
+function profile(){
+  const g=G();
+  g.add(box(-0.05,0.05,0,0.006,0,0.09,mat.tube));
+  g.add(box(-0.02,0.02,0.006,3.20,0.008,0.078,mat.tube));
+  HOOKS.forEach(h=>{ [-1,1].forEach(s=>{
+    g.add(box(s>0?0.003:-0.008, s>0?0.008:-0.003, h-0.025, h+0.06, 0.0775, 0.0785, mat.slot,false));
+  });});
+  return g;
+}
+function fixings(){
+  const f=G();
+  [-0.035,0.035].forEach(dx=>{ const b=cyl(0.006,0.006,mat.screw); b.position.set(dx,0.009,0.045); f.add(b); });
+  L_LEVELS.forEach(y=>{ const b=cyl(0.004,0.064,mat.screw,'x'); b.position.set(0,y,0.035); f.add(b);
+    [-1,1].forEach(s=>{ const n=cyl(0.0075,0.005,mat.screw,'x'); n.position.set(s*0.0255,y,0.035); f.add(n); }); });
+  return f;
+}
+function addPanelParts(g, parts){ parts.forEach(p=>{ g.add(p); panelMeshes.push(p); }); }
+function panel(){ // panel recto 0,70: local x 0→0,70, local z desde la cara del tabique
+  const g=G(), m=panelMat.rojo, t=0.002, y0=0.01, y1=3.20, a=0.005, b=MOD-0.005;
+  const parts=[
+    box(a,b,y0,y1,0.098,0.100,m), box(a,a+t,y0,y1,0.078,0.098,m), box(b-t,b,y0,y1,0.078,0.098,m),
+    box(a,b,y1-t,y1,0.078,0.098,m), box(a,b,y0,y0+t,0.078,0.098,m)
+  ];
+  HOOKS.forEach(h=>{ [[a,a+t],[b-t,b]].forEach(([u,v])=>{
+    parts.push(box(u,v,h,h+0.03,0.066,0.078,m));
+    parts.push(box(u,v,h-0.02,h,0.066,0.0705,m));
+  });});
+  addPanelParts(g,parts); return g;
+}
+const ease = t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+/* =============== TRAMO RECTO =============== */
+CUR=['recto'];
+const ctxGroup = G();
+ctxGroup.add(box(-1.6,4.8,-0.03,0,-1.4,3.2,mat.floor));
+const grid = new THREE.GridHelper(6,30,0x9a9a9a,0xb8b8b8); grid.position.set(1.6,0.0008,0.9);
+grid.material.transparent=true; grid.material.opacity=.35; ctxGroup.add(grid);
+reg(ctxGroup,1,{modes:MODES});
+const ceilGroup = G();
+ceilGroup.add(box(-1.6,4.8,Y_CEIL,Y_CEIL+0.012,-1.4,3.2,mat.ceil,false));
+ceilGroup.add(box(-1.6,4.8,Y_SLAB,Y_SLAB+0.20,-1.4,3.2,mat.slab,false));
+reg(ceilGroup,1,{modes:MODES});
+
+reg(pivotBox(X0,X1,0,0.035,-0.095,-0.025,mat.galv),2,{grow:'x',dur:.8});
+reg(pivotBox(X0,X1,Y_SLAB-0.035,Y_SLAB,-0.095,-0.025,mat.galv),2,{grow:'x',dur:.8});
+MONT.forEach((x,i)=>{
+  reg(box(x-0.0175,x+0.0175,0.035,Y_SLAB-0.035,-0.095,-0.025,mat.galv),2,{path:[[0,0.5,0]],delay:.6+i*.07,dur:.6});
+});
+L_LEVELS.forEach((y,li)=>{
+  for(let i=0;i<MONT.length-1;i++){
+    reg(box(MONT[i]+0.0175,MONT[i+1]-0.0175,y-0.075,y+0.075,-0.043,-0.025,mat.wood),2,{path:[[0,0,0.35]],delay:1.8+li*.25+i*.03,dur:.55});
+  }
+});
+reg(box(X0,X1,0,Y_SLAB,-0.12,-0.095,mat.placa),3,{path:[[0,0,-0.5]],dur:.8});
+for(let i=0;i<MONT.length-1;i++){
+  const a=Math.max(MONT[i]+0.0175,-0.38), b=MONT[i+1]-0.0175;
+  reg(box(a,b,0.035,Y_SLAB-0.035,-0.095,-0.07,mat.rigid),3,{path:[[0,0,0.4]],delay:.7+i*.05,dur:.6});
+  const L=new THREE.Group();
+  L_LEVELS.reduce((prev,y)=>{ L.add(box(a,b,prev,y-0.075,-0.07,-0.043,mat.wool)); return y+0.075; },0.035);
+  L.add(box(a,b,L_LEVELS[3]+0.075,Y_SLAB-0.035,-0.07,-0.043,mat.wool));
+  reg(L,3,{path:[[0,0,0.4]],delay:1.2+i*.05,dur:.6});
+}
+reg(box(-0.30,X1,0,Y_SLAB,-0.025,-0.0125,mat.placa),3,{path:[[0,0,0.5]],delay:2.1,dur:.8});
+reg(box(-0.22,X1,0,Y_SLAB,-0.0125,0,mat.placa),3,{path:[[0,0,0.6]],delay:2.7,dur:.8});
+AXES.forEach((x,i)=>{
+  reg(pivotBox(x-0.002,x+0.002,0,0.003,0,0.30,mat.chalk),4,{grow:'z',delay:i*.12,dur:.5});
+  reg(pivotBox(x-0.002,x+0.002,0,3.20,0.0004,0.0016,mat.chalk),4,{grow:'y',delay:.4+i*.12,dur:.7});
+});
+L_LEVELS.forEach((y,i)=>{
+  reg(pivotBox(-0.10,AXES[N_PANELS]+0.10,y-0.002,y+0.002,0.0004,0.0016,mat.chalk),4,{grow:'x',delay:1.4+i*.18,dur:.7});
+});
+let k=0;
+L_LEVELS.forEach(y=>{ AXES.forEach(x=>{ [-1,1].forEach(s=>{ const a=angle(s); a.position.set(x,y,0); reg(a,5,{path:[[0,0,0.45]],delay:(k++)*.035,dur:.5}); }); }); });
+AXES.forEach((x,i)=>{ const p=profile(); p.position.set(x,0,0); reg(p,6,{path:[[0,0.06,0.7],[0,0.06,0]],delay:i*.45,dur:1.1}); });
+AXES.forEach((x,i)=>{ const f=fixings(); f.position.set(x,0,0); reg(f,6,{path:[[0,0,0.12]],delay:3.2+i*.12,dur:.45}); });
+for(let i=0;i<N_PANELS;i++){
+  const p=panel(); p.position.set(AXES[i],0,0); panelGroups.recto.push(p);
+  reg(p,7,{path:[[0,0.025,0.75],[0,0.025,0]],delay:i*1.7,dur:1.9});
+}
+function dimInto(group, list, a,b,txt,lp){
+  const tick=0.025, A=new THREE.Vector3(...a), B=new THREE.Vector3(...b);
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([A,B]),mat.dim));
+  const dir=B.clone().sub(A).normalize(); const perp=Math.abs(dir.y)>.9?new THREE.Vector3(1,0,0):new THREE.Vector3(0,1,0);
+  [A,B].forEach(P=>{ group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([P.clone().addScaledVector(perp,-tick),P.clone().addScaledVector(perp,tick)]),mat.dim)); });
+  list.push([txt, lp || [(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2], true]);
+}
+const dimR=G(), cotR=[];
+dimInto(dimR,cotR,[3.62,0.02,0],[3.62,0.02,0.10],"10 cm",[3.62,0.02,0.05]);
+dimInto(dimR,cotR,[3.62,0,0.12],[3.62,0.01,0.12],"1 cm al piso",[3.62,0.005,0.12]);
+dimInto(dimR,cotR,[3.62,3.20,0.12],[3.62,Y_CEIL,0.12],"1 cm al cielorraso",[3.62,3.205,0.12]);
+dimInto(dimR,cotR,[0,0.25,0.16],[MOD,0.25,0.16],"0,70 m");
+dimInto(dimR,cotR,[-0.12,0.01,0.12],[-0.12,3.20,0.12],"3,19 m");
+dimInto(dimR,cotR,[MOD-0.005,2.6,0.13],[MOD+0.005,2.6,0.13],"junta 1 cm",[MOD,2.6,0.13]);
+reg(dimR,8);
+
+/* =============== CURVA =============== */
+function stArc(th){ return {x:R_OUT*Math.cos(th), z:R_OUT*Math.sin(th), phi:Math.PI/2-th}; }
+function stTop(s){ return {x:s, z:R_OUT, phi:0}; }
+function stRight(s){ return {x:R_OUT, z:s, phi:Math.PI/2}; }
+function nrm(st){ return [Math.sin(st.phi), Math.cos(st.phi)]; }           // normal hacia afuera (x,z)
+function lw(st,lx,y,lz){ const c=Math.cos(st.phi), s=Math.sin(st.phi); return [st.x+lx*c+lz*s, y, st.z-lx*s+lz*c]; } // local → mundo
+function putAt(o,st){ o.rotation.y=st.phi; o.position.set(st.x,0,st.z); return o; }
+function wrapAt(child,st){ const g=G(); g.add(child); return putAt(g,st); }
+function radPath(st,a,dy=0){ const n=nrm(st); return [n[0]*a,dy,n[1]*a]; }
+function tabLayer(z0,z1,y0,y1,m,xTop=-TAB_EXT,zRight=-TAB_EXT){
+  const g=G();
+  g.add(box(xTop,0,y0,y1,R_OUT+z0,R_OUT+z1,m));
+  g.add(arcShell(R_OUT+z0,R_OUT+z1,0,Math.PI/2,y0,y1,m));
+  g.add(box(R_OUT+z0,R_OUT+z1,y0,y1,zRight,0,m));
+  return g;
+}
+const TST = {
+  facetada:[stTop(-EXT)].concat(Array.from({length:10},(_,i)=>stArc((90-i*10)*D2R)), [stRight(-EXT)]),
+  rolada:[stTop(-EXT)].concat(Array.from({length:6},(_,i)=>stArc((90-i*18)*D2R)), [stRight(-EXT)])
+};
+
+/* Paso 2: estructura curva (compartida por las dos variantes) */
+CUR=['facetada','rolada'];
+reg(tabLayer(-0.095,-0.025,0,0.035,mat.galv),2,{path:[[0,0,0]],dur:.3});
+reg(tabLayer(-0.095,-0.025,Y_SLAB-0.035,Y_SLAB,mat.galv),2,{path:[[0,0,0]],delay:.3,dur:.3});
+const MST=[stTop(-1.08),stTop(-0.72),stTop(-0.36)];
+for(let a=90;a>=-1e-6;a-=7.5) MST.push(stArc(a*D2R));
+MST.push(stRight(-0.36),stRight(-0.72),stRight(-1.08));
+MST.forEach((st,i)=>{ reg(wrapAt(box(-0.0175,0.0175,0.035,Y_SLAB-0.035,-0.095,-0.025,mat.galv),st),2,{path:[[0,0.5,0]],delay:.6+i*.06,dur:.6}); });
+L_LEVELS.forEach((y,li)=>{
+  for(let i=0;i<MST.length-1;i++){
+    const P=MST[i],Q=MST[i+1], dx=Q.x-P.x, dz=Q.z-P.z, len=Math.hypot(dx,dz), phi=Math.atan2(-dz/len, dx/len);
+    const g=G(); g.add(box(-len/2+0.0175,len/2-0.0175,y-0.075,y+0.075,-0.043,-0.025,mat.wood));
+    g.rotation.y=phi; g.position.set((P.x+Q.x)/2,0,(P.z+Q.z)/2);
+    reg(g,2,{path:[[Math.sin(phi)*0.35,0,Math.cos(phi)*0.35]],delay:2.0+li*.25+i*.02,dur:.55});
+  }
+});
+/* Paso 3 */
+reg(tabLayer(-0.12,-0.095,0,Y_SLAB,mat.placa),3,{grow:'y',dur:.9});
+reg(tabLayer(-0.095,-0.07,0.035,Y_SLAB-0.035,mat.rigid,-1.08),3,{grow:'y',delay:.7,dur:.9});
+reg(tabLayer(-0.07,-0.043,0.035,Y_SLAB-0.035,mat.wool,-1.08),3,{grow:'y',delay:1.2,dur:.9});
+reg(tabLayer(-0.025,-0.0125,0,Y_SLAB,mat.placa,-1.00),3,{grow:'y',delay:2.0,dur:.9});
+reg(tabLayer(-0.0125,0,0,Y_SLAB,mat.placa,-0.92),3,{grow:'y',delay:2.6,dur:.9});
+/* Paso 4: replanteo común */
+reg(tabLayer(0.098,0.102,0,0.003,mat.chalk,-EXT-0.1,-EXT-0.1),4,{path:[[0,0,0]],dur:.3});
+L_LEVELS.forEach((y,i)=>{ reg(tabLayer(0.0004,0.0016,y-0.002,y+0.002,mat.chalk,-EXT-0.1,-EXT-0.1),4,{path:[[0,0,0]],delay:1.8+i*.2,dur:.3}); });
+
+/* Por variante: replanteo de ejes, L, perfiles, paneles */
+function facetPanel(thA,thB){
+  const g=G(), m=panelMat.rojo, t=0.002, y0=0.01, y1=3.20;
+  const thm=(thA+thB)/2, half=(thA-thB)/2, d=RF*Math.cos(half), c=2*RF*Math.sin(half), a=-c/2+0.005, b=c/2-0.005;
+  const parts=[
+    box(a,b,y0,y1,d-0.002,d,m), box(a,a+t,y0,y1,d-0.022,d-0.002,m), box(b-t,b,y0,y1,d-0.022,d-0.002,m),
+    box(a,b,y1-t,y1,d-0.022,d-0.002,m), box(a,b,y0,y0+t,d-0.022,d-0.002,m)
+  ];
+  HOOKS.forEach(h=>{ [[a,a+t],[b-t,b]].forEach(([u,v])=>{
+    parts.push(box(u,v,h,h+0.03,d-0.034,d-0.022,m));
+    parts.push(box(u,v,h-0.02,h,d-0.034,d-0.0295,m));
+  });});
+  addPanelParts(g,parts); g.rotation.y=Math.PI/2-thm; return {g, thm};
+}
+function rolledPanel(thA,thB){
+  const g=G(), m=panelMat.rojo, t=0.002, y0=0.01, y1=3.20, dl=0.005/RF, a=thB+dl, b=thA-dl;
+  const parts=[
+    arcShell(RF-t,RF,a,b,y0,y1,m), arcShell(RF-0.022,RF-t,a,b,y1-t,y1,m), arcShell(RF-0.022,RF-t,a,b,y0,y0+t,m)
+  ];
+  addPanelParts(g,parts);
+  [[b,0,t],[a,-t,0]].forEach(([th,u,v])=>{
+    const e=G(); e.rotation.y=Math.PI/2-th;
+    const ep=[box(u,v,y0,y1,RF-0.022,RF-t,m)];
+    HOOKS.forEach(h=>{ ep.push(box(u,v,h,h+0.03,RF-0.034,RF-0.022,m)); ep.push(box(u,v,h-0.02,h,RF-0.034,RF-0.0295,m)); });
+    addPanelParts(e,ep); g.add(e);
+  });
+  return {g, thm:(thA+thB)/2};
+}
+['facetada','rolada'].forEach(md=>{
+  CUR=[md]; const S=TST[md];
+  S.forEach((st,i)=>{
+    reg(wrapAt(box(-0.002,0.002,0,0.003,0,0.30,mat.chalk),st),4,{path:[[0,0,0]],delay:.3+i*.08,dur:.3});
+    reg(wrapAt(box(-0.002,0.002,0,3.20,0.0004,0.0016,mat.chalk),st),4,{path:[[0,0,0]],delay:.6+i*.08,dur:.3});
+  });
+  let n=0;
+  L_LEVELS.forEach(y=>{ S.forEach(st=>{ [-1,1].forEach(s=>{
+    const a=angle(s); a.position.y=y; reg(wrapAt(a,st),5,{path:[radPath(st,0.45)],delay:(n++)*.02,dur:.5});
+  }); }); });
+  S.forEach((st,i)=>{ reg(putAt(profile(),st),6,{path:[radPath(st,0.7,0.06),[0,0.06,0]],delay:i*.3,dur:1.1}); });
+  S.forEach((st,i)=>{ reg(putAt(fixings(),st),6,{path:[radPath(st,0.12)],delay:S.length*.3+.9+i*.08,dur:.45}); });
+  // paneles: recto de arriba → curva → recto de la derecha
+  const list=[];
+  list.push({g:putAt(panel(),stTop(-EXT)), st:stTop(-EXT)});
+  const steps = md==='facetada'?9:5, da = 90/steps;
+  for(let i=0;i<steps;i++){
+    const thA=(90-i*da)*D2R, thB=(90-(i+1)*da)*D2R;
+    const P = md==='facetada'?facetPanel(thA,thB):rolledPanel(thA,thB);
+    list.push({g:P.g, st:{phi:Math.PI/2-P.thm}});
+  }
+  list.push({g:putAt(panel(),stArc(0)), st:stArc(0)});
+  list.forEach((p,i)=>{ panelGroups[md].push(p.g); reg(p.g,7,{path:[radPath(p.st,0.75,0.025),[0,0.025,0]],delay:i*1.25,dur:1.7}); });
+});
+/* Cotas curva */
+const cotC={facetada:[],rolada:[]};
+['facetada','rolada'].forEach(md=>{
+  CUR=[md]; const g=G(), L=cotC[md];
+  const s45=stArc(45*D2R), s30=stArc(30*D2R), s15=stArc(15*D2R);
+  dimInto(g,L,lw(s45,0,0.02,0),lw(s45,0,0.02,0.10),"10 cm");
+  dimInto(g,L,lw(s30,0,0,0.12),lw(s30,0,0.01,0.12),"1 cm al piso",lw(s30,0,0.005,0.12));
+  dimInto(g,L,lw(s30,0,3.20,0.12),lw(s30,0,Y_CEIL,0.12),"1 cm al cielorraso",lw(s30,0,3.205,0.12));
+  dimInto(g,L,lw(s15,0,0.01,0.14),lw(s15,0,3.20,0.14),"3,19 m");
+  L.push(["Cara de piel R 1,94",lw(stArc(62*D2R),0,2.9,0.10),true]);
+  L.push([md==='facetada'?"Faceta 0,33 m · 10°":"Arco 0,60 m · 18°", lw(stArc((md==='facetada'?75:81)*D2R),0,0.4,0.10),true]);
+  reg(g,8);
+});
+CUR=['recto'];
+
+/* ---------- Vistas y etiquetas por tramo ---------- */
+const VIEWS = {
+  recto:[
+    [[5.6,3.1,7.2],[1.75,1.9,0]], [[-2.4,2.3,3.6],[0.7,1.7,-0.05]], [[-2.0,2.0,2.6],[0.2,1.7,-0.06]], [[2.4,1.7,4.6],[1.75,1.4,0]],
+    [[2.6,1.5,1.7],[1.2,1.0,0]], [[4.6,2.3,4.4],[1.75,1.5,0]], [[5.4,2.4,5.8],[1.75,1.6,0]], [[-1.9,1.5,5.4],[1.75,1.6,0]]
+  ],
+  curva:[
+    [[6.4,3.8,6.4],[0.5,1.8,0.5]], [[-3.0,2.6,5.6],[0.2,1.7,1.2]], [[-2.9,2.2,3.9],[-0.7,1.7,1.6]], [[4.4,2.3,4.4],[0.9,1.3,0.9]],
+    [[3.5,1.7,3.5],[1.2,1.0,1.2]], [[5.6,2.9,5.6],[0.7,1.5,0.7]], [[6.0,3.0,6.0],[0.6,1.6,0.6]], [[5.4,1.2,5.8],[0.6,1.5,0.6]]
+  ]
+};
+VIEWS.facetada=VIEWS.curva; VIEWS.rolada=VIEWS.curva;
+const DETAIL_ST = {recto:{x:0.70,z:0,phi:0}, facetada:stArc(50*D2R), rolada:stArc(54*D2R)};
+function detailView(st){ return [lw(st,0.32,1.55,0.46), lw(st,0,1.32,0.05)]; }
+function detailLabels(st){ return [["Gancho del panel",lw(st,0.006,1.345,0.068)],["Ranura en el perfil",lw(st,-0.006,1.39,0.079)],["Retorno del panel (2 mm)",lw(st,0.014,1.25,0.09)],["Bulón M8 + ángulo L",lw(st,0.03,1.30,0.03)],["Tubo 40×70",lw(st,-0.01,1.20,0.078)]]; }
+
+const LABELS = {recto:[
+  [["NPT ±0,00",[3.95,0,0.9]],["Cielorraso +3,21",[3.95,Y_CEIL,0.9]],["Losa +3,81",[3.95,Y_SLAB+0.05,0.5]],["Tabique 01 (a construir)",[1.75,0.02,-0.06]]],
+  [["Solera superior 70 mm",[0.25,Y_SLAB-0.03,-0.06]],["Solera inferior 70 mm",[0.25,0.03,-0.06]],["Montante 70 mm c/40 cm",[1.2,2.7,-0.025]],["Refuerzo fenólico",[1.0,1.30,-0.025]]],
+  [["Lana de vidrio + panel rígido",[-0.38,2.0,-0.06]],["Doble placa 12,5 mm",[-0.22,2.8,0]],["Tabique 01 · 12 cm",[-0.4,3.3,-0.06]]],
+  [["Eje de perfil c/0,70 m",[0.70,2.65,0.002]],["Nivel de anclaje",[2.6,2.25,0.002]],["Inicio del replanteo",[0,0.002,0.25]]],
+  [["Ángulo L 50×50×3",[0.75,1.30,0.03]],["Tornillo al refuerzo",[0.65,1.32,0.006]],["Par de L por nivel",[1.42,2.25,0.05]]],
+  [["Tubo 40×70 mm",[1.42,2.7,0.078]],["Planchuela base",[1.42,0.006,0.09]],["Bulón pasante M8",[1.45,1.30,0.035]],["Ranura para gancho",[2.1,2.17,0.079]]],
+  [["Panel chapa 2 mm",[1.75,2.0,0.10]],["Gancho → ranura",[0.70,1.35,0.08]],["Junta 1 cm",[2.10,2.6,0.10]]],
+  cotR.concat([["Cielorraso +3,21",[3.95,Y_CEIL,0.9]],["NPT ±0,00",[3.95,0,0.9]]])
+]};
+['facetada','rolada'].forEach(md=>{
+  const s3=TST[md][3], a=st=>stArc(st*D2R);
+  LABELS[md]=[
+    [["NPT ±0,00",lw(a(10),0,0,0.9)],["Cielorraso +3,21",lw(a(10),0,Y_CEIL,0.9)],["Losa +3,81",lw(a(10),0,Y_SLAB+0.05,0.6)],["Tabique curvo (a construir)",lw(a(45),0,0.02,-0.06)]],
+    [["Solera curva, alas cortadas",lw(a(60),0,0.03,-0.06)],["Montantes c/7,5° (≈ 23 cm)",lw(a(37.5),0,2.7,-0.025)],["Refuerzo en tramos rectos",lw(a(41.25),0,1.30,-0.03)],["Tramo recto: montantes c/36 cm",lw(stTop(-0.54),0,2.2,-0.03)]],
+    [["Placas curvadas en húmedo",lw(a(70),0,2.6,0)],["Lana de vidrio + panel rígido",[-1.08,2.0,R_OUT-0.06]],["Corte del tabique · 12 cm",[-1.10,3.3,R_OUT-0.06]]],
+    [["Línea de cara de piel R 1,94",lw(a(45),0,0.003,0.10)],["Eje de perfil (radial)",lw(s3,0,2.6,0.002)],["Nivel de anclaje",lw(a(30),0,2.25,0.002)]],
+    [["Ángulos L radiales",lw(s3,0.05,1.30,0.03)],["Tornillo al refuerzo",lw(s3,-0.05,1.32,0.006)]],
+    [["Tubo 40×70 radial",lw(s3,0.02,2.7,0.078)],["Planchuela base",lw(s3,0,0.006,0.09)],["Bulón pasante M8",lw(s3,0.025,1.30,0.035)]],
+    md==='facetada'
+      ? [["Faceta plana 0,33 m",lw(a(45),0,2.0,0.10)],["Panel recto 0,70 m",lw(stTop(-EXT),0.35,2.0,0.10)],["Arista sobre perfil",lw(a(60),0,2.6,0.10)]]
+      : [["Panel rolado R 1,94",lw(a(45),0,2.0,0.10)],["Panel recto 0,70 m",lw(stTop(-EXT),0.35,2.0,0.10)],["Junta 1 cm",lw(a(54),0,2.6,0.10)]],
+    cotC[md].concat([["Cielorraso +3,21",lw(a(10),0,Y_CEIL,0.9)],["NPT ±0,00",lw(a(10),0,0,0.9)]])
+  ];
+});
+
+/* ---------- Animación ---------- */
+let current=1, mode='recto', reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function applyItem(it, now){
+  const o=it.obj, f=o.userData.final;
+  if(!it.path && !it.grow){ o.visible=true; return; }
+  const local=(now-it.start)/1000;
+  if(local<0){ o.visible=false; return; }
+  o.visible=true;
+  const T=Math.min(local/it.dur,1);
+  if(it.grow){ const s=Math.max(ease(T),0.0001); o.scale.set(it.grow==='x'?s:1,it.grow==='y'?s:1,it.grow==='z'?s:1); }
+  if(it.path){
+    const pts=[...it.path,[0,0,0]], n=pts.length-1, seg=Math.min(Math.floor(T*n),n-1), u=ease(T*n-seg);
+    const p=pts[seg], q=pts[seg+1];
+    o.position.set(f.x+p[0]+(q[0]-p[0])*u, f.y+p[1]+(q[1]-p[1])*u, f.z+p[2]+(q[2]-p[2])*u);
+  }
+}
+function finalize(it){ it.obj.position.copy(it.obj.userData.final); it.obj.scale.set(1,1,1); it.obj.visible=true; it.start=-1; }
+function stepLength(n){ return items.filter(i=>i.step===n && i.modes.includes(mode)).reduce((m,i)=>Math.max(m,i.delay+(i.path||i.grow?i.dur:0)),0); }
+
+let camAnim=null, labelSet=[];
+function flyTo(view, ms=1200){
+  if(reduce) ms=0;
+  camAnim={p0:camera.position.clone(), t0:controls.target.clone(), p1:new THREE.Vector3(...view[0]), t1:new THREE.Vector3(...view[1]), s:performance.now(), ms};
+}
+function setStep(n, play=true){
+  current=n; detailOn=false;
+  const now=performance.now();
+  items.forEach(it=>{
+    if(!it.modes.includes(mode) || it.step>n){ it.obj.visible=false; it.start=-1; }
+    else if(it.step<n) finalize(it);
+    else if(play && !reduce){ it.start=now+it.delay*1000+350; applyItem(it, now); }
+    else finalize(it);
+  });
+  flyTo(VIEWS[mode][n-1]);
+  labelSet = LABELS[mode][n-1];
+  buildLabels(); renderUI();
+}
+
+/* ---------- Etiquetas ---------- */
+const labelsEl=document.getElementById('labels'); let labelEls=[];
+function buildLabels(){
+  labelsEl.innerHTML=''; labelEls=[];
+  if(!optLabels.checked) return;
+  labelSet.forEach(([t,p,cota])=>{
+    const d=document.createElement('div'); d.className='lbl'+(cota?' cota':''); d.textContent=t; labelsEl.appendChild(d);
+    labelEls.push([d,new THREE.Vector3(...p)]);
+  });
+}
+const v=new THREE.Vector3();
+function placeLabels(){
+  const w=vp.clientWidth,h=vp.clientHeight;
+  labelEls.forEach(([d,p])=>{
+    v.copy(p).project(camera);
+    if(v.z>1||v.z<-1||Math.abs(v.x)>1.05||Math.abs(v.y)>1.05){ d.style.display='none'; return; }
+    d.style.display=''; d.style.left=((v.x+1)/2*w)+'px'; d.style.top=((1-v.y)/2*h)+'px';
+  });
+}
+
+/* ---------- UI ---------- */
+const stepsEl=document.getElementById('steps'), card=document.getElementById('card');
+const optCeil=document.getElementById('optCeil'), optGhost=document.getElementById('optGhost'), optLabels=document.getElementById('optLabels');
+STEPS.forEach((s,i)=>{
+  const li=document.createElement('li'); const b=document.createElement('button'); b.type='button';
+  b.innerHTML=`<span class="n">${String(i+1).padStart(2,'0')}</span><span class="t">${s.t}</span>`; b.setAttribute('aria-label',`Paso ${i+1}: ${s.t}`); b.onclick=()=>{ stopAll(); setStep(i+1); };
+  li.appendChild(b); stepsEl.appendChild(li);
+});
+function stepData(i){ return Object.assign({}, STEPS[i], STEP_OVR[mode][i]||{}); }
+function renderUI(){
+  [...stepsEl.querySelectorAll('button')].forEach((b,i)=>{ b.classList.toggle('on',i+1===current); b.classList.toggle('done',i+1<current); b.setAttribute('aria-current',i+1===current?'step':'false'); });
+  const s=stepData(current-1);
+  card.innerHTML=`<div class="bignum" aria-hidden="true">${String(current).padStart(2,'0')}</div><div class="kick">Paso ${current} de ${STEPS.length} · ${s.k}</div><h2>${s.t}</h2><p>${s.p}</p><dl class="spec">${s.s.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl>`;
+  document.getElementById('hudStep').textContent=detailOn?'Detalle del encastre':`Paso ${current}/${STEPS.length}`;
+  document.getElementById('hudMode').textContent=MODE_NAME[mode];
+  document.getElementById('note').textContent=NOTES[mode];
+  document.getElementById('prev').disabled=current===1;
+  document.getElementById('next').disabled=current===STEPS.length;
+  document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===mode?'true':'false'));
+}
+document.getElementById('prev').onclick=()=>{ stopAll(); if(current>1) setStep(current-1); };
+document.getElementById('next').onclick=()=>{ stopAll(); if(current<STEPS.length) setStep(current+1); };
+document.getElementById('replay').onclick=()=>{ stopAll(); setStep(current); };
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{ stopAll(); mode=b.dataset.m; setStep(current,false); });
+addEventListener('keydown',e=>{
+  if(e.target.closest && e.target.closest('input,button') && e.key===' ') return;
+  if(e.key==='ArrowRight'&&current<STEPS.length){ stopAll(); setStep(current+1); }
+  if(e.key==='ArrowLeft'&&current>1){ stopAll(); setStep(current-1); }
+});
+
+let playTimer=null; const playBtn=document.getElementById('playAll');
+function stopAll(){ if(playTimer){ clearTimeout(playTimer); playTimer=null; playBtn.textContent='▶ Ver todo el montaje'; } }
+function playFrom(n){
+  setStep(n);
+  if(n<STEPS.length) playTimer=setTimeout(()=>playFrom(n+1), (stepLength(n)+0.35)*1000+1500);
+  else { playTimer=null; playBtn.textContent='▶ Ver todo el montaje'; }
+}
+playBtn.onclick=()=>{ if(playTimer){ stopAll(); return; } playBtn.textContent='■ Detener'; playFrom(1); };
+
+let detailOn=false;
+document.getElementById('detail').onclick=()=>{
+  stopAll();
+  if(current<7) setStep(8,false);
+  items.forEach(it=>{ if(it.modes.includes(mode) && it.step<=current) finalize(it); });
+  detailOn=true; optGhost.checked=true; setGhost(true);
+  const st=DETAIL_ST[mode];
+  flyTo(detailView(st),1400); labelSet=detailLabels(st); buildLabels(); renderUI();
+};
+
+optLabels.onchange=buildLabels;
+function setGhost(on){ for(const k in panelMat){ const m=panelMat[k]; m.transparent=on; m.opacity=on?.28:1; m.depthWrite=!on; m.needsUpdate=true; } panelMeshes.forEach(p=>p.castShadow=!on); }
+optGhost.onchange=()=>setGhost(optGhost.checked);
+
+
+/* ---------- Tema y tamaño ---------- */
+function applyTheme(){
+  const cs=getComputedStyle(document.documentElement);
+  scene.background=new THREE.Color(cs.getPropertyValue('--viewport').trim()||'#e2e5e8');
+  mat.chalk.color.set(cs.getPropertyValue('--chalk').trim()||'#1f5fd1');
+  mat.dim.color.set(cs.getPropertyValue('--dim').trim()||'#e3001b');
+}
+applyTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+function resize(){ const w=vp.clientWidth,h=vp.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov = camera.aspect<1 ? Math.min(70, 40+(1-camera.aspect)*45) : 40; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(vp); resize();
+
+/* ---------- Loop ---------- */
+function frame(now){
+  if(camAnim){
+    const t=camAnim.ms?Math.min((now-camAnim.s)/camAnim.ms,1):1, u=ease(t);
+    camera.position.lerpVectors(camAnim.p0,camAnim.p1,u); controls.target.lerpVectors(camAnim.t0,camAnim.t1,u);
+    if(t>=1) camAnim=null;
+  }
+  items.forEach(it=>{ if(it.step===current && it.start>0 && it.modes.includes(mode)) applyItem(it,now); });
+  ceilGroup.visible = optCeil.checked;
+  controls.update(); renderer.render(scene,camera); placeLabels();
+  requestAnimationFrame(frame);
+}
+camera.position.set(...VIEWS.recto[0][0]); controls.target.set(...VIEWS.recto[0][1]);
+setStep(1,false);
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
