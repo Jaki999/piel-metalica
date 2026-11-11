@@ -33,6 +33,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;l
 .lbl::after{content:"";position:absolute;left:-14px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--ink)}
 .lbl.cota{background:var(--dim);border-color:var(--dim);color:var(--dim-ink)}
 .lbl.cota::before,.lbl.cota::after{background:var(--dim)}
+.lbl{animation:lblIn .3s ease-out}
+@keyframes lblIn{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.lbl{animation:none}}
 .lbl.flip{transform:translate(calc(-100% - 11px),-50%)}
 .lbl.flip::before{left:auto;right:-12px}
 .lbl.flip::after{left:auto;right:-14px}
@@ -147,10 +150,12 @@ dl.spec dd{margin:0;font:700 12.5px/1.35 var(--f);text-transform:uppercase;lette
       <span><i style="background:#d7141f"></i>Panel chapa</span>
       <span><i style="background:#3e4348"></i>Tubo 40×70</span>
       <span><i style="background:#737a82"></i>Ángulo L</span>
-      <span><i style="background:#a7713f"></i>Refuerzo</span>
+      <span><i style="background:#c89a5b"></i>Refuerzo OSB</span>
       <span><i style="background:#eeede8"></i>Placa yeso</span>
       <span><i style="background:#e5c25a"></i>Lana vidrio</span>
       <span><i style="background:#b3bac0"></i>Perfil Durlock</span>
+      <span><i style="background:#9c9a96"></i>Piso técnico</span>
+      <span><i style="background:#7f7d79"></i>Losa</span>
       <span><i style="background:#1f5fd1"></i>Replanteo</span>
     </div>
     <div class="hint">Arrastrar: girar · Rueda: zoom<br>Clic derecho: desplazar</div>
@@ -209,6 +214,9 @@ const AXES = Array.from({length:N_PANELS+1},(_,i)=>i*MOD);
 const L_LEVELS = [0.35, 1.30, 2.25, 3.05];
 const HOOKS = [0.55, 1.35, 2.15, 2.95];
 const Y_CEIL = 3.21, Y_SLAB = 3.81;
+const Y_LOSA = -0.15;            // losa de piso: el NPT lo da un piso técnico elevado de 15 cm
+const REF_H = 0.20;              // alto de la tira de OSB; el ángulo L (8 cm) queda centrado en ella
+const REF_BOT = L_LEVELS.map(y=>+(y-REF_H/2).toFixed(3));   // borde inferior de cada tira: +0,25 · +1,20 · +2,15 · +2,95
 const X0 = -0.40, X1 = 3.90;
 const MONT = []; for(let x=X0; x<=X1+1e-6; x+=0.40) MONT.push(+x.toFixed(3));
 /* Curva: radios del croquis de planta */
@@ -216,47 +224,49 @@ const R_IN = 1.72, R_OUT = 1.84, RF = R_OUT + 0.10, TAB_EXT = 1.10, EXT = 0.70;
 
 const MODE_NAME = {recto:"Tramo recto", facetada:"Curva facetada", rolada:"Tramo curvo · rolado"};
 const NOTES = {
-  recto:"Tramo modelado: 5 paneles (3,50 m). Medidas de tabique, separación, alturas y paneles según croquis. Secciones de tubo, ángulos, refuerzos y fijaciones son propuestas a confirmar.",
+  recto:"Tramo modelado: 5 paneles (3,50 m). Medidas de tabique, separación, alturas y paneles según croquis. Piso técnico cortado en un extremo para ver el tabique hasta la losa. Secciones de tubo, ángulos, refuerzos y fijaciones son propuestas a confirmar.",
   facetada:"Curva de 90° con tabique entre R 1,72 y R 1,84 (12 cm) y cara de piel en R 1,94. Se dibuja un panel recto de 0,70 m a cada lado para ver el encuentro. Separación de montantes en curva y radio de curvado de placas a verificar con Durlock.",
-  rolada:"Curva de 90° con tabique entre R 1,72 y R 1,84 (12 cm) y cara de piel en R 1,94. Se dibuja un panel recto de 0,70 m a cada lado para ver el encuentro. Separación de montantes en curva y radio de curvado de placas a verificar con Durlock."
+  rolada:"Curva de 90° con tabique entre R 1,72 y R 1,84 (12 cm) y cara de piel en R 1,94. Se dibuja un panel recto de 0,70 m a cada lado para ver el encuentro. Piso técnico cortado en un extremo para ver el tabique hasta la losa. Separación de montantes en curva, radio de curvado de placas y anclaje al piso técnico a verificar."
 };
 
 const STEPS = [
   {t:"Situación existente", k:"Sector exterior de la sala",
-   p:"La piel va del lado de afuera de la sala de capacitación, hacia la circulación. Se toma como referencia el piso terminado, el cielorraso suspendido y la losa.",
-   s:[["NPT","±0,00 m"],["Cielorraso","+3,21 m"],["Losa","+3,81 m"]]},
-  {t:"Estructura del tabique 01", k:"Soleras, montantes y refuerzos",
-   p:"Soleras de 70 mm fijadas a piso y losa, montantes cada 40 cm. A la altura de cada anclaje se colocan refuerzos de fenólico entre montantes: la placa de yeso sola no sirve para atornillar los ángulos.",
-   s:[["Perfilería","Soleras y montantes 70 mm, acero galvanizado"],["Montantes","c/ 0,40 m"],["Refuerzos","Fenólico 18 mm × 15 cm"],["Niveles","+0,35 · +1,30 · +2,25 · +3,05"]]},
+   p:"La piel va del lado de afuera de la sala de capacitación, hacia la circulación. El piso terminado lo da un piso técnico elevado: la losa de piso está 15 cm más abajo. El tabique va de losa a losa; la piel y sus perfiles arrancan sobre el piso técnico.",
+   s:[["Losa de piso","−0,15 m"],["NPT (piso técnico)","±0,00 m"],["Cielorraso","+3,21 m"],["Losa superior","+3,81 m"]]},
+  {t:"Estructura del tabique 01", k:"Soleras, montantes y refuerzos OSB",
+   p:"El tabique va de losa a losa: solera inferior sobre la losa de piso y solera superior contra la losa, con montantes cada 40 cm. Se arma antes del piso técnico. Del lado de la piel se atornillan tiras de OSB entre montantes, una por cada nivel de anclaje: la placa de yeso sola no sirve para atornillar los ángulos. Los niveles son del borde inferior de cada tira.",
+   s:[["Perfilería","Soleras y montantes 70 mm, acero galvanizado"],["Montantes","c/ 0,40 m, de losa a losa"],["Alto del tabique","3,96 m (−0,15 a +3,81)"],["Refuerzo","Tira de OSB 18 mm × 20 cm de alto"],
+      ["OSB 1","Borde inf. +0,25 · sup. +0,45 (0,40 m desde losa)"],["OSB 2","Borde inf. +1,20 · sup. +1,40 (1,35 m desde losa)"],["OSB 3","Borde inf. +2,15 · sup. +2,35 (2,30 m desde losa)"],["OSB 4","Borde inf. +2,95 · sup. +3,15 (3,10 m desde losa)"]]},
   {t:"Aislación y doble placa", k:"Cierre del tabique",
-   p:"Se rellena con panel rígido y lana de vidrio, y se cierra con doble placa de cada lado. Antes de cerrar conviene marcar en el piso y la losa dónde quedaron los refuerzos.",
-   s:[["Relleno","Panel rígido + lana de vidrio"],["Placas","2 × 12,5 mm por cara"],["Espesor total","12 cm"]]},
-  {t:"Replanteo", k:"Ejes y niveles",
-   p:"Se marcan los ejes de los perfiles cada 70 cm, en el piso y en el tabique, y las líneas de nivel de los anclajes. Se arranca desde un extremo para que los paneles queden enteros.",
-   s:[["Ejes","c/ 0,70 m"],["Anclajes","4 niveles, sobre los refuerzos"],["Cara de la piel","a 10 cm del tabique"]]},
+   p:"Se rellena con panel rígido y lana de vidrio, y se cierra con doble placa de 12,5 mm de cada lado: dos hacia la sala y dos hacia la circulación, con juntas trabadas. Las placas también van de losa a losa. Antes de cerrar, marcar en la losa dónde quedaron los refuerzos.",
+   s:[["Relleno","Panel rígido + lana de vidrio"],["Cara sala","2 placas × 12,5 mm"],["Cara circulación","2 placas × 12,5 mm"],["Espesor total","12 cm (70 mm + 4 × 12,5 mm)"],["Alto","Losa a losa, 3,96 m"]]},
+  {t:"Piso técnico y replanteo", k:"Piso colocado, ejes y niveles",
+   p:"Con el tabique cerrado se coloca el piso técnico hasta la cara del tabique (NPT ±0,00). Después se marcan los ejes de los perfiles cada 70 cm, en el piso y en el tabique, y las líneas de nivel de los anclajes. Se arranca desde un extremo para que los paneles queden enteros.",
+   s:[["Piso técnico","Baldosas sobre pedestales, NPT ±0,00"],["Ejes","c/ 0,70 m"],["Anclajes","+0,35 · +1,30 · +2,25 · +3,05 (centro del ángulo)"],["Cara de la piel","a 10 cm del tabique"]]},
   {t:"Anclajes L", k:"Ángulos al tabique",
-   p:"Se atornillan los ángulos L al tabique, de a pares, uno a cada lado del eje. Los tornillos toman el refuerzo de fenólico, no solo la placa.",
-   s:[["Ángulo","Acero 50 × 50 × 3 mm, 8 cm de alto"],["Fijación","2 tornillos por ángulo al refuerzo"],["Cantidad","2 ángulos × 4 niveles por perfil"]]},
-  {t:"Perfiles verticales", k:"Tubo apoyado en el piso",
-   p:"Cada perfil viene con la planchuela de base soldada en taller. Se calza entre los pares de L, se aploma y se fija al piso con brocas y a las L con un bulón pasante. El peso de la piel baja al piso; las L solo lo mantienen a plomo.",
-   s:[["Perfil","Tubo de acero 40 × 70 mm, pintado"],["Base","Planchuela 100 × 100 × 6 mm + 2 brocas"],["Unión a L","Bulón pasante M8 por nivel"],["Cara frontal","Ranuras troqueladas para los ganchos"]]},
+   p:"Se atornillan los ángulos L al tabique, de a pares, uno a cada lado del eje. Cada ángulo queda centrado en su tira de OSB y los tornillos toman el OSB, no solo la placa.",
+   s:[["Ángulo","Acero 50 × 50 × 3 mm, 8 cm de alto"],["Fijación","2 tornillos por ángulo al OSB"],["Cantidad","2 ángulos × 4 niveles por perfil"]]},
+  {t:"Perfiles verticales", k:"Tubo apoyado en el piso técnico",
+   p:"Cada perfil viene con la planchuela de base soldada en taller. Se calza entre los pares de L apoyado sobre el piso técnico, se aploma y se fija al piso técnico y a las L con un bulón pasante. El peso de la piel baja al piso técnico; las L solo lo mantienen a plomo.",
+   s:[["Perfil","Tubo de acero 40 × 70 mm, pintado"],["Base","Planchuela 100 × 100 × 6 mm, anclada al piso técnico"],["Bajo la base","Pedestal o refuerzo del piso técnico (a verificar con el proveedor)"],["Unión a L","Bulón pasante M8 por nivel"],["Cara frontal","Ranuras troqueladas para los ganchos"]]},
   {t:"Colgado de paneles", k:"Encastre por gancho",
    p:"Los paneles se cuelgan de a uno, de un extremo al otro. Se presentan con los ganchos frente a las ranuras, se empujan hasta el perfil y se bajan 2,5 cm hasta que traban. En cada perfil se enganchan los bordes de dos paneles.",
    s:[["Panel","Chapa de acero 2 mm plegada en bandeja"],["Medida","0,70 × 3,19 m (junta de 1 cm)"],["Ganchos","4 por lado"],["Peso","≈ 38 kg por panel (estimado): 2 personas"]]},
   {t:"Piel terminada", k:"Cotas principales",
    p:"Queda una piel continua con juntas verticales de 1 cm, despegada 1 cm del piso y 1 cm del cielorraso. Cualquier panel se puede sacar levantándolo y tirando hacia afuera.",
-   s:[["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso · 1 cm del cielorraso"],["Módulo","0,70 m"],["Alto de panel","3,19 m"]]}
+   s:[["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso técnico · 1 cm del cielorraso"],["Módulo","0,70 m"],["Alto de panel","3,19 m"],["Tabique","Losa a losa, −0,15 a +3,81"]]}
 ];
 /* Textos que cambian en la curva (índice de paso → reemplazo) */
 const CURVE_COMMON = {
-  1:{p:"En la curva las soleras se curvan cortando una de las alas cada pocos centímetros, y los montantes se acercan: uno cada 7,5° (unos 23 cm sobre el arco). Los refuerzos de fenólico van en tramos rectos cortos entre montantes, así no hay que curvar madera.",
-     s:[["Radios","Interior R 1,72 · exterior R 1,84"],["Montantes","c/ 7,5° en curva · c/ 0,36 m en recto"],["Soleras","70 mm con alas cortadas para curvar"],["Refuerzos","Fenólico 18 mm en tramos rectos"]]},
+  1:{p:"Igual que en recto, el tabique va de losa a losa. En la curva las soleras se curvan cortando una de las alas cada pocos centímetros, y los montantes se acercan: uno cada 7,5° (unos 23 cm sobre el arco). Las tiras de OSB van en tramos rectos cortos entre montantes, así no hay que curvar madera. Mismos niveles que en recto (borde inferior de cada tira).",
+     s:[["Radios","Interior R 1,72 · exterior R 1,84"],["Montantes","c/ 7,5° en curva · c/ 0,36 m en recto"],["Soleras","70 mm con alas cortadas, sobre losa (−0,15) y contra losa (+3,81)"],["Refuerzo","OSB 18 mm × 20 cm en tramos rectos"],
+        ["OSB 1","Borde inf. +0,25 (0,40 m desde losa)"],["OSB 2","Borde inf. +1,20 (1,35 m desde losa)"],["OSB 3","Borde inf. +2,15 (2,30 m desde losa)"],["OSB 4","Borde inf. +2,95 (3,10 m desde losa)"]]},
   2:{p:"Mismo relleno que el tramo recto. En la curva las placas de 12,5 mm se curvan humedeciéndolas antes de atornillar. Si el radio no da para esa placa, se reemplaza por placas finas de 6,5 mm en más capas.",
-     s:[["Relleno","Panel rígido + lana de vidrio"],["Placas","12,5 mm curvadas en húmedo (radio a verificar)"],["Espesor total","12 cm, igual que en recto"]]},
+     s:[["Relleno","Panel rígido + lana de vidrio"],["Placas","2 × 12,5 mm por cara, curvadas en húmedo (radio a verificar)"],["Espesor total","12 cm, igual que en recto"],["Alto","Losa a losa, 3,96 m"]]},
   4:{p:"Igual que en recto, pero cada par de L queda orientado hacia el centro de la curva, en dirección radial. Así el tubo queda perpendicular al tabique en cada punto.",
      s:[["Ángulo","Acero 50 × 50 × 3 mm, 8 cm de alto"],["Orientación","Radial, hacia el centro de la curva"],["Fijación","2 tornillos por ángulo al refuerzo"]]},
-  5:{p:"Los perfiles son los mismos que en el tramo recto: se calzan entre las L, quedan radiales, se aploman y se fijan al piso y a las L. Los dos perfiles de las puntas de la curva son también los primeros de los tramos rectos.",
-     s:[["Perfil","Tubo de acero 40 × 70 mm"],["Base","Planchuela 100 × 100 × 6 mm + 2 brocas"],["Unión a L","Bulón pasante M8 por nivel"]]}
+  5:{p:"Los perfiles son los mismos que en el tramo recto: se calzan entre las L apoyados sobre el piso técnico, quedan radiales, se aploman y se fijan al piso técnico y a las L. Los dos perfiles de las puntas de la curva son también los primeros de los tramos rectos.",
+     s:[["Perfil","Tubo de acero 40 × 70 mm"],["Base","Planchuela 100 × 100 × 6 mm, anclada al piso técnico"],["Unión a L","Bulón pasante M8 por nivel"]]}
 };
 const STEP_OVR = {
   recto:{},
@@ -270,35 +280,35 @@ const STEP_OVR = {
        s:[["Cara de piel","R 1,94"],["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso · 1 cm del cielorraso"],["Paneles","9 facetas de 0,33 m + rectos de 0,70 m"]]}
   }),
   rolada:Object.assign({}, CURVE_COMMON, {
-    3:{p:"La cara de la piel queda en R 1,94. Se dibuja el arco en el piso con una plantilla de terciado cortada a ese radio (el centro de la curva cae dentro de la sala) y se marca un eje de perfil cada 18°.",
-       s:[["Cara de piel","R 1,94"],["Ejes","c/ 18° (arco 0,61 m)"],["Anclajes","4 niveles, sobre los refuerzos"]]},
+    3:{p:"Con el tabique cerrado se coloca el piso técnico hasta la cara del tabique. La cara de la piel queda en R 1,94: se dibuja el arco en el piso técnico con una plantilla de terciado cortada a ese radio (el centro de la curva cae dentro de la sala) y se marca un eje de perfil cada 18°.",
+       s:[["Piso técnico","NPT ±0,00, hasta la cara del tabique"],["Cara de piel","R 1,94"],["Ejes","c/ 18° (arco 0,61 m)"],["Anclajes","4 niveles, centrados en las tiras de OSB"]]},
     5:Object.assign({}, CURVE_COMMON[5], {s:CURVE_COMMON[5].s.concat([["Cantidad","6 perfiles en la curva"]])}),
     6:{p:"La curva se arma con 5 paneles rolados en taller a R 1,94, de 18° cada uno. Los retornos laterales y los ganchos son iguales a los del tramo recto. Arriba y abajo, como una bandeja no se puede rolar con las pestañas ya plegadas, conviene soldar un perfil curvo o cortar las pestañas en gajos.",
        s:[["Panel curva","0,60 m de arco × 3,19 m"],["Paneles","5 × 18°"],["Rolado","R 1,94 en taller"],["Pestañas","Perfil curvo soldado arriba y abajo"]]},
     7:{p:"La piel sigue la curva sin aristas y las juntas quedan cada 0,61 m, parecido al módulo del tramo recto. Es más prolija pero más cara: cada panel se fabrica a medida y no se puede reemplazar por uno recto.",
-       s:[["Cara de piel","R 1,94"],["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso · 1 cm del cielorraso"],["Paneles","5 rolados de 0,60 m + rectos de 0,70 m"]]}
+       s:[["Cara de piel","R 1,94"],["Separación","10 cm, de tabique a cara de piel"],["Despegue","1 cm del piso técnico · 1 cm del cielorraso"],["Paneles","5 rolados de 0,60 m + rectos de 0,70 m"],["Tabique","Losa a losa, −0,15 a +3,81"]]}
   })
 };
 
 /* ---------- Ficha de obra por paso: qué se hace, materiales, herramientas, control ---------- */
 const OBRA = [
-  {a:["Verificar el nivel de piso terminado (NPT ±0,00).","Verificar altura de cielorraso (+3,21) y de losa (+3,81).","Dejar el sector libre para trabajar."],
+  {a:["Verificar el nivel de la losa de piso (−0,15) y el NPT que va a dar el piso técnico (±0,00).","Verificar altura de cielorraso (+3,21) y de losa superior (+3,81).","Dejar el sector libre para trabajar."],
    m:["Planos de detalle"], h:["Nivel láser","Cinta métrica"],
-   c:["Piso sin desniveles mayores a 3 mm","Nivel de cielorraso marcado"]},
-  {a:["Fijar soleras de 70 mm a piso y losa con tarugos.","Colocar montantes cada 40 cm, encastrados en las soleras.","Atornillar refuerzos de fenólico entre montantes en los 4 niveles de anclaje."],
-   m:["Soleras y montantes 70 mm","Fenólico 18 mm × 15 cm","Tarugos y tornillos T1"], h:["Atornilladora","Nivel láser","Tijera para chapa"],
-   c:["Montantes a plomo","Refuerzos a +0,35 / +1,30 / +2,25 / +3,05"]},
-  {a:["Colocar panel rígido y lana de vidrio entre montantes.","Atornillar doble placa de 12,5 mm de cada lado, con juntas trabadas.","Marcar en el piso la posición de los refuerzos antes de cerrar."],
+   c:["Losa sin desniveles mayores a 3 mm","Nivel de cielorraso marcado"]},
+  {a:["Fijar la solera inferior sobre la losa de piso (−0,15) y la superior contra la losa (+3,81), con tarugos.","Colocar montantes cada 40 cm, de losa a losa, encastrados en las soleras.","Atornillar tiras de OSB 18 mm × 20 cm entre montantes, del lado de la piel.","Borde inferior de cada tira medido desde la losa: 0,40 · 1,35 · 2,30 · 3,10 m (= +0,25 · +1,20 · +2,15 · +2,95 sobre NPT)."],
+   m:["Soleras y montantes 70 mm","OSB 18 mm en tiras de 20 cm","Tarugos y tornillos T1"], h:["Atornilladora","Nivel láser","Tijera para chapa"],
+   c:["Montantes a plomo","Borde inferior de OSB a +0,25 / +1,20 / +2,15 / +2,95"]},
+  {a:["Colocar panel rígido y lana de vidrio entre montantes.","Atornillar dos placas de 12,5 mm del lado de la sala y dos del lado de la circulación, con juntas trabadas, de losa a losa.","Marcar en la losa la posición de los refuerzos antes de cerrar."],
    m:["Lana de vidrio + panel rígido","Placas de yeso 12,5 mm","Tornillos T2"], h:["Atornilladora","Cutter"],
-   c:["Espesor terminado 12 cm","Refuerzos marcados en piso"]},
-  {a:["Marcar los ejes de perfiles cada 70 cm, en piso y tabique, arrancando desde un extremo.","Trazar las líneas de nivel de los anclajes.","Marcar en el piso la cara de la piel a 10 cm del tabique."],
+   c:["Espesor terminado 12 cm","Refuerzos marcados"]},
+  {a:["Colocar el piso técnico hasta la cara del tabique (NPT ±0,00).","Marcar los ejes de perfiles cada 70 cm, en piso técnico y tabique, arrancando desde un extremo.","Trazar las líneas de nivel de los anclajes (centro del ángulo): +0,35 · +1,30 · +2,25 · +3,05.","Marcar en el piso la cara de la piel a 10 cm del tabique."],
    m:["Tiza de marcar"], h:["Nivel láser","Cinta métrica","Hilo entizado"],
    c:["Ejes sobre los refuerzos","Módulo 0,70 m sin acumular error"]},
-  {a:["Presentar los ángulos de a pares, uno a cada lado del eje.","Atornillar cada ángulo al refuerzo con 2 tornillos.","Repetir en los 4 niveles."],
+  {a:["Presentar los ángulos de a pares, uno a cada lado del eje, centrados en la tira de OSB.","Atornillar cada ángulo al OSB con 2 tornillos.","Repetir en los 4 niveles."],
    m:["Ángulos 50 × 50 × 3 mm, 8 cm","Tornillos para madera"], h:["Atornilladora","Nivel"],
    c:["Luz entre ángulos = 40 mm (ancho del tubo)","Ángulos alineados en vertical"]},
-  {a:["Calzar el tubo entre los pares de L, apoyado en el piso.","Aplomar el perfil.","Fijar la planchuela al piso con 2 brocas.","Pasar un bulón M8 en cada nivel y ajustar."],
-   m:["Tubo 40 × 70 mm con planchuela soldada","Brocas de expansión","Bulones M8 + tuercas"], h:["Taladro percutor","Llave 13 mm","Nivel / plomada"],
+  {a:["Calzar el tubo entre los pares de L, apoyado sobre el piso técnico.","Aplomar el perfil.","Anclar la planchuela al piso técnico (verificar que haya pedestal o refuerzo debajo).","Pasar un bulón M8 en cada nivel y ajustar."],
+   m:["Tubo 40 × 70 mm con planchuela soldada","Fijaciones para piso técnico","Bulones M8 + tuercas"], h:["Taladro","Llave 13 mm","Nivel / plomada"],
    c:["Perfil a plomo en las dos direcciones","Ranuras de cuelgue hacia afuera","Cara del tubo a 78 mm del tabique"]},
   {a:["Entre 2 personas, presentar el panel con los ganchos frente a las ranuras.","Empujar hasta que el retorno toque el perfil.","Bajar 2,5 cm hasta que trabe.","Seguir con el panel siguiente, de un extremo al otro."],
    m:["Paneles chapa 2 mm, 0,70 × 3,19 m"], h:["Ventosas","Guantes"],
@@ -309,13 +319,13 @@ const OBRA = [
 ];
 STEPS.forEach((s,i)=>Object.assign(s,OBRA[i]));
 const OBRA_CURVA = {
-  1:{a:["Curvar las soleras cortando una de las alas cada pocos centímetros.","Fijar las soleras a piso y losa siguiendo el radio (R 1,72 / R 1,84).","Colocar montantes cada 7,5° en la curva (≈ 23 cm) y cada 36 cm en recto.","Colocar refuerzos de fenólico en tramos rectos cortos entre montantes."],
+  1:{a:["Curvar las soleras cortando una de las alas cada pocos centímetros.","Fijar las soleras sobre la losa de piso (−0,15) y contra la losa (+3,81) siguiendo el radio (R 1,72 / R 1,84).","Colocar montantes de losa a losa, cada 7,5° en la curva (≈ 23 cm) y cada 36 cm en recto.","Colocar tiras de OSB 18 mm × 20 cm en tramos rectos cortos entre montantes, con el borde inferior a 0,40 · 1,35 · 2,30 · 3,10 m desde la losa."],
      c:["Radio parejo en todo el arco","Montantes a plomo"]},
-  2:{a:["Colocar panel rígido y lana de vidrio.","Humedecer las placas de 12,5 mm y curvarlas antes de atornillar.","Atornillar doble placa de cada lado."],
+  2:{a:["Colocar panel rígido y lana de vidrio.","Humedecer las placas de 12,5 mm y curvarlas antes de atornillar.","Atornillar dos placas del lado de la sala y dos del lado de la circulación, de losa a losa."],
      c:["Radio mínimo de placa verificado con Durlock","Superficie sin quiebres"]},
-  3:{a:["Cortar una plantilla de terciado con radio R 1,94.","Trazar en el piso el arco de la cara de la piel.","Marcar un eje de perfil cada 18°, en dirección radial.","Trazar las líneas de nivel de los anclajes."],
+  3:{a:["Colocar el piso técnico hasta la cara del tabique (NPT ±0,00).","Cortar una plantilla de terciado con radio R 1,94.","Trazar en el piso el arco de la cara de la piel.","Marcar un eje de perfil cada 18°, en dirección radial.","Trazar las líneas de nivel de los anclajes."],
      m:["Plantilla de terciado R 1,94","Tiza de marcar"], c:["Ejes radiales: apuntan al centro de la curva"]},
-  4:{a:["Presentar los ángulos de a pares, orientados hacia el centro de la curva.","Atornillar cada ángulo al refuerzo con 2 tornillos.","Repetir en los 4 niveles."]},
+  4:{a:["Presentar los ángulos de a pares, orientados hacia el centro de la curva y centrados en la tira de OSB.","Atornillar cada ángulo al OSB con 2 tornillos.","Repetir en los 4 niveles."]},
   5:{c:["Perfil a plomo","Perfil radial: perpendicular al tabique","Ranuras de cuelgue hacia afuera"]},
   6:{a:["Entre 2 personas, presentar el panel con los ganchos frente a las ranuras.","Empujar y bajar 2,5 cm hasta que trabe.","Arrancar por el panel recto de un extremo y seguir por la curva."],
      m:["5 paneles rolados R 1,94 (0,60 m de arco)","2 paneles rectos 0,70 m"], c:["Junta de 1 cm","Curva continua, sin quiebres"]},
@@ -346,7 +356,8 @@ const M = (c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughn
 const mat = {
   floor:M(0x9c9a96,{roughness:.95}), slab:M(0xa9a7a3,{transparent:true,opacity:.18,depthWrite:false}),
   ceil:M(0xffffff,{transparent:true,opacity:.22,depthWrite:false}),
-  galv:M(0xb3bac0,{metalness:.55,roughness:.38}), wood:M(0xa7713f,{roughness:.7}),
+  losa:M(0x7f7d79,{roughness:1}), ped:M(0x5d6166,{metalness:.5,roughness:.45}),
+  galv:M(0xb3bac0,{metalness:.55,roughness:.38}), wood:M(0xc89a5b,{roughness:.85}),
   wool:M(0xe5c25a,{roughness:1}), rigid:M(0xd8b04a,{roughness:1}), placa:M(0xeeede8,{roughness:.9}),
   tube:M(0x3e4348,{metalness:.45,roughness:.45}), angle:M(0x737a82,{metalness:.6,roughness:.4}),
   screw:M(0xd5d8dc,{metalness:.8,roughness:.25}), slot:M(0x08090a,{roughness:1}),
@@ -434,37 +445,60 @@ const ease = t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 
 /* =============== TRAMO RECTO =============== */
 CUR=['recto'];
+/* Losa de piso (−0,15) en todos los tramos; el piso técnico entra en el paso 4, cortado en un extremo */
 const ctxGroup = G();
-ctxGroup.add(box(-1.6,4.8,-0.03,0,-1.4,3.2,mat.floor));
-const grid = new THREE.GridHelper(6,30,0x6f6d69,0x7e7c78); grid.position.set(1.6,0.0008,0.9);
-grid.material.transparent=true; grid.material.opacity=.35; ctxGroup.add(grid);
+ctxGroup.add(box(-1.6,4.8,Y_LOSA-0.20,Y_LOSA,-1.4,3.2,mat.losa));
 reg(ctxGroup,1,{modes:MODES});
+const jointMat = new THREE.LineBasicMaterial({color:0x5f5d59, transparent:true, opacity:.55});
+function raisedFloor(x0,x1,z0,z1,skipPed){
+  const g=G(), T=0.03, P=0.60;
+  g.add(box(x0,x1,-T,0,z0,z1,mat.floor));
+  const pts=[];
+  for(let x=x0+P; x<x1-1e-6; x+=P) pts.push(new THREE.Vector3(x,0.0008,z0), new THREE.Vector3(x,0.0008,z1));
+  for(let z=Math.ceil(z0/P)*P; z<z1-1e-6; z+=P) pts.push(new THREE.Vector3(x0,0.0008,z), new THREE.Vector3(x1,0.0008,z));
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), jointMat));
+  // pedestales: solo las dos primeras filas junto al corte, que son las que se ven
+  [x0+0.04, x0+P].forEach(x=>{
+    for(let z=Math.ceil(z0/P)*P; z<z1-0.05; z+=P){
+      if(skipPed(x,z)) continue;
+      const c=cyl(0.011,-T-Y_LOSA,mat.ped); c.position.set(x,(Y_LOSA-T)/2,z); g.add(c);
+      g.add(box(x-0.04,x+0.04,Y_LOSA,Y_LOSA+0.004,z-0.04,z+0.04,mat.ped));
+      g.add(box(x-0.04,x+0.04,-T-0.004,-T,z-0.04,z+0.04,mat.ped));
+    }
+  });
+  return g;
+}
+reg(raisedFloor(-0.10,4.8,-1.4,3.2,(x,z)=>z>-0.25&&z<0.12),4,{modes:['recto'],path:[[0,0.35,0]],dur:.8});
+reg(raisedFloor(-0.85,4.8,-1.4,3.2,(x,z)=>Math.abs(z-R_OUT+0.06)<0.18),4,{modes:['facetada','rolada'],path:[[0,0.35,0]],dur:.8});
 const ceilGroup = G();
 ceilGroup.add(box(-1.6,4.8,Y_CEIL,Y_CEIL+0.012,-1.4,3.2,mat.ceil,false));
 ceilGroup.add(box(-1.6,4.8,Y_SLAB,Y_SLAB+0.20,-1.4,3.2,mat.slab,false));
 reg(ceilGroup,1,{modes:MODES});
 
-reg(pivotBox(X0,X1,0,0.035,-0.095,-0.025,mat.galv),2,{grow:'x',dur:.8});
+reg(pivotBox(X0,X1,Y_LOSA,Y_LOSA+0.035,-0.095,-0.025,mat.galv),2,{grow:'x',dur:.8});
 reg(pivotBox(X0,X1,Y_SLAB-0.035,Y_SLAB,-0.095,-0.025,mat.galv),2,{grow:'x',dur:.8});
 MONT.forEach((x,i)=>{
-  reg(box(x-0.0175,x+0.0175,0.035,Y_SLAB-0.035,-0.095,-0.025,mat.galv),2,{path:[[0,0.5,0]],delay:.6+i*.07,dur:.6});
+  reg(box(x-0.0175,x+0.0175,Y_LOSA+0.035,Y_SLAB-0.035,-0.095,-0.025,mat.galv),2,{path:[[0,0.5,0]],delay:.6+i*.07,dur:.6});
 });
-L_LEVELS.forEach((y,li)=>{
+REF_BOT.forEach((y,li)=>{
   for(let i=0;i<MONT.length-1;i++){
-    reg(box(MONT[i]+0.0175,MONT[i+1]-0.0175,y-0.075,y+0.075,-0.043,-0.025,mat.wood),2,{path:[[0,0,0.35]],delay:1.8+li*.25+i*.03,dur:.55});
+    reg(box(MONT[i]+0.0175,MONT[i+1]-0.0175,y,y+REF_H,-0.043,-0.025,mat.wood),2,{path:[[0,0,0.35]],delay:1.8+li*.25+i*.03,dur:.55});
   }
 });
-reg(box(X0,X1,0,Y_SLAB,-0.12,-0.095,mat.placa),3,{path:[[0,0,-0.5]],dur:.8});
+/* doble placa del lado de la sala (2 × 12,5 mm), de losa a losa */
+reg(box(X0,X1,Y_LOSA,Y_SLAB,-0.12,-0.1075,mat.placa),3,{path:[[0,0,-0.5]],dur:.8});
+reg(box(X0+0.04,X1,Y_LOSA,Y_SLAB,-0.1075,-0.095,mat.placa),3,{path:[[0,0,-0.5]],delay:.25,dur:.8});
 for(let i=0;i<MONT.length-1;i++){
   const a=Math.max(MONT[i]+0.0175,-0.38), b=MONT[i+1]-0.0175;
-  reg(box(a,b,0.035,Y_SLAB-0.035,-0.095,-0.07,mat.rigid),3,{path:[[0,0,0.4]],delay:.7+i*.05,dur:.6});
+  reg(box(a,b,Y_LOSA+0.035,Y_SLAB-0.035,-0.095,-0.07,mat.rigid),3,{path:[[0,0,0.4]],delay:.7+i*.05,dur:.6});
   const L=new THREE.Group();
-  L_LEVELS.reduce((prev,y)=>{ L.add(box(a,b,prev,y-0.075,-0.07,-0.043,mat.wool)); return y+0.075; },0.035);
-  L.add(box(a,b,L_LEVELS[3]+0.075,Y_SLAB-0.035,-0.07,-0.043,mat.wool));
+  REF_BOT.reduce((prev,y)=>{ L.add(box(a,b,prev,y,-0.07,-0.043,mat.wool)); return y+REF_H; },Y_LOSA+0.035);
+  L.add(box(a,b,REF_BOT[3]+REF_H,Y_SLAB-0.035,-0.07,-0.043,mat.wool));
   reg(L,3,{path:[[0,0,0.4]],delay:1.2+i*.05,dur:.6});
 }
-reg(box(-0.30,X1,0,Y_SLAB,-0.025,-0.0125,mat.placa),3,{path:[[0,0,0.5]],delay:2.1,dur:.8});
-reg(box(-0.22,X1,0,Y_SLAB,-0.0125,0,mat.placa),3,{path:[[0,0,0.6]],delay:2.7,dur:.8});
+/* doble placa del lado de la circulación (piel) */
+reg(box(-0.30,X1,Y_LOSA,Y_SLAB,-0.025,-0.0125,mat.placa),3,{path:[[0,0,0.5]],delay:2.1,dur:.8});
+reg(box(-0.22,X1,Y_LOSA,Y_SLAB,-0.0125,0,mat.placa),3,{path:[[0,0,0.6]],delay:2.7,dur:.8});
 AXES.forEach((x,i)=>{
   reg(pivotBox(x-0.002,x+0.002,0,0.003,0,0.30,mat.chalk),4,{grow:'z',delay:i*.12,dur:.5});
   reg(pivotBox(x-0.002,x+0.002,0,3.20,0.0004,0.0016,mat.chalk),4,{grow:'y',delay:.4+i*.12,dur:.7});
@@ -494,6 +528,7 @@ dimInto(dimR,cotR,[3.62,3.20,0.12],[3.62,Y_CEIL,0.12],"1 cm al cielorraso",[3.62
 dimInto(dimR,cotR,[0,0.25,0.16],[MOD,0.25,0.16],"0,70 m");
 dimInto(dimR,cotR,[-0.12,0.01,0.12],[-0.12,3.20,0.12],"3,19 m");
 dimInto(dimR,cotR,[MOD-0.005,2.6,0.13],[MOD+0.005,2.6,0.13],"junta 1 cm",[MOD,2.6,0.13]);
+dimInto(dimR,cotR,[-0.10,Y_LOSA,0.6],[-0.10,0,0.6],"Piso técnico 15 cm",[-0.10,-0.075,0.6]);
 reg(dimR,8);
 
 /* =============== CURVA =============== */
@@ -519,26 +554,28 @@ const TST = {
 
 /* Paso 2: estructura curva (compartida por las dos variantes) */
 CUR=['facetada','rolada'];
-reg(tabLayer(-0.095,-0.025,0,0.035,mat.galv),2,{path:[[0,0,0]],dur:.3});
+reg(tabLayer(-0.095,-0.025,Y_LOSA,Y_LOSA+0.035,mat.galv),2,{path:[[0,0,0]],dur:.3});
 reg(tabLayer(-0.095,-0.025,Y_SLAB-0.035,Y_SLAB,mat.galv),2,{path:[[0,0,0]],delay:.3,dur:.3});
 const MST=[stTop(-1.08),stTop(-0.72),stTop(-0.36)];
 for(let a=90;a>=-1e-6;a-=7.5) MST.push(stArc(a*D2R));
 MST.push(stRight(-0.36),stRight(-0.72),stRight(-1.08));
-MST.forEach((st,i)=>{ reg(wrapAt(box(-0.0175,0.0175,0.035,Y_SLAB-0.035,-0.095,-0.025,mat.galv),st),2,{path:[[0,0.5,0]],delay:.6+i*.06,dur:.6}); });
-L_LEVELS.forEach((y,li)=>{
+MST.forEach((st,i)=>{ reg(wrapAt(box(-0.0175,0.0175,Y_LOSA+0.035,Y_SLAB-0.035,-0.095,-0.025,mat.galv),st),2,{path:[[0,0.5,0]],delay:.6+i*.06,dur:.6}); });
+REF_BOT.forEach((y,li)=>{
   for(let i=0;i<MST.length-1;i++){
     const P=MST[i],Q=MST[i+1], dx=Q.x-P.x, dz=Q.z-P.z, len=Math.hypot(dx,dz), phi=Math.atan2(-dz/len, dx/len);
-    const g=G(); g.add(box(-len/2+0.0175,len/2-0.0175,y-0.075,y+0.075,-0.043,-0.025,mat.wood));
+    const g=G(); g.add(box(-len/2+0.0175,len/2-0.0175,y,y+REF_H,-0.043,-0.025,mat.wood));
     g.rotation.y=phi; g.position.set((P.x+Q.x)/2,0,(P.z+Q.z)/2);
     reg(g,2,{path:[[Math.sin(phi)*0.35,0,Math.cos(phi)*0.35]],delay:2.0+li*.25+i*.02,dur:.55});
   }
 });
 /* Paso 3 */
-reg(tabLayer(-0.12,-0.095,0,Y_SLAB,mat.placa),3,{grow:'y',dur:.9});
-reg(tabLayer(-0.095,-0.07,0.035,Y_SLAB-0.035,mat.rigid,-1.08),3,{grow:'y',delay:.7,dur:.9});
-reg(tabLayer(-0.07,-0.043,0.035,Y_SLAB-0.035,mat.wool,-1.08),3,{grow:'y',delay:1.2,dur:.9});
-reg(tabLayer(-0.025,-0.0125,0,Y_SLAB,mat.placa,-1.00),3,{grow:'y',delay:2.0,dur:.9});
-reg(tabLayer(-0.0125,0,0,Y_SLAB,mat.placa,-0.92),3,{grow:'y',delay:2.6,dur:.9});
+function growFrom(o,y){ o.position.y=y; o.children.forEach(c=>c.position.y-=y); return o; }  // crece desde la losa
+reg(growFrom(tabLayer(-0.12,-0.1075,Y_LOSA,Y_SLAB,mat.placa),Y_LOSA),3,{grow:'y',dur:.9});
+reg(growFrom(tabLayer(-0.1075,-0.095,Y_LOSA,Y_SLAB,mat.placa,-1.06),Y_LOSA),3,{grow:'y',delay:.3,dur:.9});
+reg(growFrom(tabLayer(-0.095,-0.07,Y_LOSA+0.035,Y_SLAB-0.035,mat.rigid,-1.04),Y_LOSA),3,{grow:'y',delay:.7,dur:.9});
+reg(growFrom(tabLayer(-0.07,-0.043,Y_LOSA+0.035,Y_SLAB-0.035,mat.wool,-1.04),Y_LOSA),3,{grow:'y',delay:1.2,dur:.9});
+reg(growFrom(tabLayer(-0.025,-0.0125,Y_LOSA,Y_SLAB,mat.placa,-1.00),Y_LOSA),3,{grow:'y',delay:2.0,dur:.9});
+reg(growFrom(tabLayer(-0.0125,0,Y_LOSA,Y_SLAB,mat.placa,-0.92),Y_LOSA),3,{grow:'y',delay:2.6,dur:.9});
 /* Paso 4: replanteo común */
 reg(tabLayer(0.098,0.102,0,0.003,mat.chalk,-EXT-0.1,-EXT-0.1),4,{path:[[0,0,0]],dur:.3});
 L_LEVELS.forEach((y,i)=>{ reg(tabLayer(0.0004,0.0016,y-0.002,y+0.002,mat.chalk,-EXT-0.1,-EXT-0.1),4,{path:[[0,0,0]],delay:1.8+i*.2,dur:.3}); });
@@ -604,6 +641,7 @@ const cotC={facetada:[],rolada:[]};
   dimInto(g,L,lw(s30,0,0,0.12),lw(s30,0,0.01,0.12),"1 cm al piso",lw(s30,0,0.005,0.12));
   dimInto(g,L,lw(s30,0,3.20,0.12),lw(s30,0,Y_CEIL,0.12),"1 cm al cielorraso",lw(s30,0,3.205,0.12));
   dimInto(g,L,lw(s15,0,0.01,0.14),lw(s15,0,3.20,0.14),"3,19 m");
+  dimInto(g,L,[-0.85,Y_LOSA,2.4],[-0.85,0,2.4],"Piso técnico 15 cm",[-0.85,-0.075,2.4]);
   L.push(["Cara de piel R 1,94",lw(stArc(62*D2R),0,2.9,0.10),true]);
   L.push([md==='facetada'?"Faceta 0,33 m · 10°":"Arco 0,60 m · 18°", lw(stArc((md==='facetada'?75:81)*D2R),0,0.4,0.10),true]);
   reg(g,8);
@@ -637,28 +675,30 @@ function detailView(st){ return [lw(st,0.32,1.55,0.46), lw(st,0,1.32,0.05)]; }
 function detailLabels(st){ return [["Gancho del panel",lw(st,0.006,1.345,0.068)],["Ranura en el perfil",lw(st,-0.006,1.39,0.079)],["Retorno del panel (2 mm)",lw(st,0.014,1.25,0.09)],["Bulón M8 + ángulo L",lw(st,0.03,1.30,0.03)],["Tubo 40×70",lw(st,-0.01,1.20,0.078)]]; }
 
 const LABELS = {recto:[
-  [["NPT ±0,00",[3.95,0,0.9]],["Cielorraso +3,21",[3.95,Y_CEIL,0.9]],["Losa +3,81",[3.95,Y_SLAB+0.05,0.5]],["Tabique 01 (a construir)",[1.75,0.02,-0.06]]],
-  [["Solera superior 70 mm",[0.25,Y_SLAB-0.03,-0.06]],["Solera inferior 70 mm",[0.25,0.03,-0.06]],["Montante 70 mm c/40 cm",[1.2,2.7,-0.025]],["Refuerzo fenólico",[1.0,1.30,-0.025]]],
-  [["Lana de vidrio + panel rígido",[-0.38,2.0,-0.06]],["Doble placa 12,5 mm",[-0.22,2.8,0]],["Tabique 01 · 12 cm",[-0.4,3.3,-0.06]]],
-  [["Eje de perfil c/0,70 m",[0.70,2.65,0.002]],["Nivel de anclaje",[2.6,2.25,0.002]],["Inicio del replanteo",[0,0.002,0.25]]],
-  [["Ángulo L 50×50×3",[0.75,1.30,0.03]],["Tornillo al refuerzo",[0.65,1.32,0.006]],["Par de L por nivel",[1.42,2.25,0.05]]],
-  [["Tubo 40×70 mm",[1.42,2.7,0.078]],["Planchuela base",[1.42,0.006,0.09]],["Bulón pasante M8",[1.45,1.30,0.035]],["Ranura para gancho",[2.1,2.17,0.079]]],
+  [["NPT ±0,00 (piso técnico)",[3.95,0,0.9]],["Losa de piso −0,15",[-0.9,Y_LOSA,0.9]],["Cielorraso +3,21",[3.95,Y_CEIL,0.9]],["Losa +3,81",[3.95,Y_SLAB+0.05,0.5]],["Tabique 01 (a construir)",[1.75,Y_LOSA+0.02,-0.06]]],
+  [["Solera superior contra losa",[0.25,Y_SLAB-0.03,-0.06]],["Solera inferior sobre losa −0,15",[0.25,Y_LOSA+0.03,-0.06]],["Montante 70 mm c/40 cm",[1.2,2.7,-0.025]],["Tira OSB 18 mm × 20 cm",[1.0,1.30,-0.025]]]
+    .concat(REF_BOT.map((y,i)=>[`OSB ${i+1} · inf. +${y.toFixed(2).replace('.',',')}`,[3.55,y,-0.025],true])),
+  [["Lana de vidrio + panel rígido",[-0.38,2.0,-0.06]],["2 placas 12,5 mm · lado piel",[-0.22,2.8,0]],["2 placas 12,5 mm · lado sala",[-0.40,2.3,-0.11]],["Tabique 01 · 12 cm · losa a losa",[-0.4,3.3,-0.06]]],
+  [["Piso técnico NPT ±0,00",[2.6,0,1.4]],["Pedestal",[-0.06,-0.09,0.6]],["Eje de perfil c/0,70 m",[0.70,2.65,0.002]],["Nivel de anclaje",[2.6,2.25,0.002]],["Inicio del replanteo",[0,0.002,0.25]]],
+  [["Ángulo L 50×50×3",[0.75,1.30,0.03]],["Tornillo al OSB",[0.65,1.32,0.006]],["Par de L por nivel",[1.42,2.25,0.05]]],
+  [["Tubo 40×70 mm",[1.42,2.7,0.078]],["Base anclada al piso técnico",[1.42,0.006,0.09]],["Bulón pasante M8",[1.45,1.30,0.035]],["Ranura para gancho",[2.1,2.17,0.079]]],
   [["Panel chapa 2 mm",[1.75,2.0,0.10]],["Gancho → ranura",[0.70,1.35,0.08]],["Junta 1 cm",[2.10,2.6,0.10]]],
-  cotR.concat([["Cielorraso +3,21",[3.95,Y_CEIL,0.9]],["NPT ±0,00",[3.95,0,0.9]]])
+  cotR.concat([["Cielorraso +3,21",[3.95,Y_CEIL,0.9]],["NPT ±0,00",[3.95,0,0.9]],["Losa de piso −0,15",[-0.9,Y_LOSA,0.9]]])
 ]};
 ['facetada','rolada'].forEach(md=>{
   const s3=TST[md][3], a=st=>stArc(st*D2R);
   LABELS[md]=[
-    [["NPT ±0,00",lw(a(10),0,0,0.9)],["Cielorraso +3,21",lw(a(10),0,Y_CEIL,0.9)],["Losa +3,81",lw(a(10),0,Y_SLAB+0.05,0.6)],["Tabique curvo (a construir)",lw(a(45),0,0.02,-0.06)]],
-    [["Solera curva, alas cortadas",lw(a(60),0,0.03,-0.06)],["Montantes c/7,5° (≈ 23 cm)",lw(a(37.5),0,2.7,-0.025)],["Refuerzo en tramos rectos",lw(a(41.25),0,1.30,-0.03)],["Tramo recto: montantes c/36 cm",lw(stTop(-0.54),0,2.2,-0.03)]],
-    [["Placas curvadas en húmedo",lw(a(70),0,2.6,0)],["Lana de vidrio + panel rígido",[-1.08,2.0,R_OUT-0.06]],["Corte del tabique · 12 cm",[-1.10,3.3,R_OUT-0.06]]],
-    [["Línea de cara de piel R 1,94",lw(a(45),0,0.003,0.10)],["Eje de perfil (radial)",lw(s3,0,2.6,0.002)],["Nivel de anclaje",lw(a(30),0,2.25,0.002)]],
-    [["Ángulos L radiales",lw(s3,0.05,1.30,0.03)],["Tornillo al refuerzo",lw(s3,-0.05,1.32,0.006)]],
-    [["Tubo 40×70 radial",lw(s3,0.02,2.7,0.078)],["Planchuela base",lw(s3,0,0.006,0.09)],["Bulón pasante M8",lw(s3,0.025,1.30,0.035)]],
+    [["NPT ±0,00 (piso técnico)",lw(a(10),0,0,0.9)],["Losa de piso −0,15",[-1.3,Y_LOSA,2.6]],["Cielorraso +3,21",lw(a(10),0,Y_CEIL,0.9)],["Losa +3,81",lw(a(10),0,Y_SLAB+0.05,0.6)],["Tabique curvo (a construir)",lw(a(45),0,Y_LOSA+0.02,-0.06)]],
+    [["Solera curva sobre losa −0,15",lw(a(60),0,Y_LOSA+0.03,-0.06)],["Montantes c/7,5° (≈ 23 cm)",lw(a(37.5),0,2.7,-0.025)],["OSB en tramos rectos",lw(a(41.25),0,1.30,-0.03)],["Tramo recto: montantes c/36 cm",lw(stTop(-0.36),0,2.6,-0.06)]]
+      .concat(REF_BOT.map((y,i)=>[`OSB ${i+1} · inf. +${y.toFixed(2).replace('.',',')}`,lw(a(4),0,y,-0.03),true])),
+    [["Placas curvadas en húmedo",lw(a(70),0,2.6,0)],["2 + 2 placas 12,5 mm",lw(a(80),0,1.6,0)],["Lana de vidrio + panel rígido",[-1.04,2.0,R_OUT-0.06]],["Corte del tabique · losa a losa",[-1.10,3.3,R_OUT-0.06]]],
+    [["Piso técnico NPT ±0,00",lw(a(30),0,0,0.9)],["Línea de cara de piel R 1,94",lw(a(45),0,0.003,0.10)],["Eje de perfil (radial)",lw(s3,0,2.6,0.002)],["Nivel de anclaje",lw(a(30),0,2.25,0.002)]],
+    [["Ángulos L radiales",lw(s3,0.05,1.30,0.03)],["Tornillo al OSB",lw(s3,-0.05,1.32,0.006)]],
+    [["Tubo 40×70 radial",lw(s3,0.02,2.7,0.078)],["Base anclada al piso técnico",lw(s3,0,0.006,0.09)],["Bulón pasante M8",lw(s3,0.025,1.30,0.035)]],
     md==='facetada'
       ? [["Faceta plana 0,33 m",lw(a(45),0,2.0,0.10)],["Panel recto 0,70 m",lw(stTop(-EXT),0.35,2.0,0.10)],["Arista sobre perfil",lw(a(60),0,2.6,0.10)]]
       : [["Panel rolado R 1,94",lw(a(45),0,2.0,0.10)],["Panel recto 0,70 m",lw(stTop(-EXT),0.35,2.0,0.10)],["Junta 1 cm",lw(a(54),0,2.6,0.10)]],
-    cotC[md].concat([["Cielorraso +3,21",lw(a(10),0,Y_CEIL,0.9)],["NPT ±0,00",lw(a(10),0,0,0.9)]])
+    cotC[md].concat([["Cielorraso +3,21",lw(a(10),0,Y_CEIL,0.9)],["NPT ±0,00",lw(a(10),0,0,0.9)],["Losa de piso −0,15",[-1.3,Y_LOSA,2.6]]])
   ];
 });
 
@@ -711,13 +751,30 @@ function buildLabels(){
   if(!optLabels.checked) return;
   labelSet.forEach(([t,p,cota])=>{
     const d=document.createElement('div'); d.className='lbl'+(cota?' cota':''); d.textContent=t; labelsEl.appendChild(d);
-    labelEls.push([d,new THREE.Vector3(...p)]);
+    const P=new THREE.Vector3(...p);
+    labelEls.push([d,P,detailOn?0:labelShowAt(P)]);
   });
+}
+/* Cada etiqueta espera a que llegue la pieza que señala: la más cercana al punto
+   (si varias lo tocan, la que aparece última). Piezas de pasos anteriores: se muestra enseguida. */
+function labelShowAt(P){
+  let best=Infinity; const cand=[];
+  items.forEach(it=>{
+    if(!it.box || it.step>current || !it.modes.includes(mode)) return;
+    const d=it.box.distanceToPoint(P); cand.push([d,it]); if(d<best) best=d;
+  });
+  let t=0;
+  cand.forEach(([d,it])=>{
+    if(d>best+0.02 || it.step!==current || !(it.start>0) || !(it.path||it.grow)) return;
+    t=Math.max(t, it.start+it.dur*1000*0.75);
+  });
+  return t;
 }
 const v=new THREE.Vector3();
 function placeLabels(){
-  const w=vp.clientWidth,h=vp.clientHeight;
-  labelEls.forEach(([d,p])=>{
+  const w=vp.clientWidth,h=vp.clientHeight, now=performance.now();
+  labelEls.forEach(([d,p,showAt])=>{
+    if(now<showAt){ d.style.display='none'; return; }
     v.copy(p).project(camera);
     if(v.z>1||v.z<-1||Math.abs(v.x)>1.05||Math.abs(v.y)>1.05){ d.style.display='none'; return; }
     const x=(v.x+1)/2*w;
@@ -817,6 +874,8 @@ function frame(now){
   controls.update(); renderer.render(scene,camera); placeLabels();
   requestAnimationFrame(frame);
 }
+scene.updateMatrixWorld(true);
+items.forEach(it=>{ it.box=new THREE.Box3().setFromObject(it.obj); });   // cajas en posición final, para las etiquetas
 camera.position.set(...VIEWS.recto[0][0]); controls.target.set(...VIEWS.recto[0][1]);
 setStep(1,false);
 requestAnimationFrame(frame);
