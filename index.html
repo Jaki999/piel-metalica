@@ -344,7 +344,7 @@ const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-4,2,3
 
 const M = (c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8,metalness:0},o));
 const mat = {
-  floor:M(0xcfcbc4,{roughness:.95}), slab:M(0xa9a7a3,{transparent:true,opacity:.18,depthWrite:false}),
+  floor:M(0x9c9a96,{roughness:.95}), slab:M(0xa9a7a3,{transparent:true,opacity:.18,depthWrite:false}),
   ceil:M(0xffffff,{transparent:true,opacity:.22,depthWrite:false}),
   galv:M(0xb3bac0,{metalness:.55,roughness:.38}), wood:M(0xa7713f,{roughness:.7}),
   wool:M(0xe5c25a,{roughness:1}), rigid:M(0xd8b04a,{roughness:1}), placa:M(0xeeede8,{roughness:.9}),
@@ -436,7 +436,7 @@ const ease = t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 CUR=['recto'];
 const ctxGroup = G();
 ctxGroup.add(box(-1.6,4.8,-0.03,0,-1.4,3.2,mat.floor));
-const grid = new THREE.GridHelper(6,30,0x9a9a9a,0xb8b8b8); grid.position.set(1.6,0.0008,0.9);
+const grid = new THREE.GridHelper(6,30,0x6f6d69,0x7e7c78); grid.position.set(1.6,0.0008,0.9);
 grid.material.transparent=true; grid.material.opacity=.35; ctxGroup.add(grid);
 reg(ctxGroup,1,{modes:MODES});
 const ceilGroup = G();
@@ -685,8 +685,9 @@ let camAnim=null, labelSet=[];
 function flyTo(view, ms=1200){
   if(reduce) ms=0;
   const t1=new THREE.Vector3(...view[1]), p1=new THREE.Vector3(...view[0]);
-  const k=Math.max(1, 1.55/camera.aspect);           // pantallas angostas: alejar la cámara para que entre el modelo
+  const k=(isFinite(camera.aspect) && camera.aspect>0) ? Math.max(1, 1.55/camera.aspect) : 1;          // pantallas angostas: alejar la cámara para que entre el modelo
   p1.sub(t1).multiplyScalar(k).add(t1);
+  if(![camera.position.x,camera.position.y,camera.position.z,controls.target.x].every(isFinite)){ camera.position.copy(p1); controls.target.copy(t1); }
   camAnim={p0:camera.position.clone(), t0:controls.target.clone(), p1, t1, s:performance.now(), ms};
 }
 function setStep(n, play=true){
@@ -801,7 +802,7 @@ function applyTheme(){
 applyTheme();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
 new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-function resize(){ const w=vp.clientWidth,h=vp.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov = camera.aspect<1 ? Math.min(55, 40+(1-camera.aspect)*25) : 40; camera.updateProjectionMatrix(); }
+function resize(){ const w=vp.clientWidth,h=vp.clientHeight; if(!w||!h) return; renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov = camera.aspect<1 ? Math.min(55, 40+(1-camera.aspect)*25) : 40; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(vp); resize();
 
 /* ---------- Loop ---------- */
